@@ -19,7 +19,7 @@ ALeiCharacter::ALeiCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("SwordMeshComponent");
-	SwordMeshComponent->SetupAttachment(GetMesh(), "SwordHolder");
+	SwordMeshComponent->SetupAttachment(GetMesh(), "weapon_r");
 }
 
 void ALeiCharacter::BeginPlay()
