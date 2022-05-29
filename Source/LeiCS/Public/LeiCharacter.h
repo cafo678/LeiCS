@@ -8,7 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-
+class ALeiPlayerController;
 
 UCLASS()
 class LEICS_API ALeiCharacter : public ACharacter
@@ -21,6 +21,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/* Input Actions */
+
 	UFUNCTION(BlueprintCallable, Category = "Locomotion")
 	void MoveForward(const float Value);
 
@@ -29,6 +31,20 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+	/* Input Variables for the Anim BP */
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	float Speed;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	FVector Velocity;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	bool bHasUserReleasedMovementInput;
+	
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	ALeiPlayerController* GetLeiPlayerController() const;
 
 private:
 	UPROPERTY()
@@ -39,4 +55,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComponent = nullptr;
+
+	float ForwardInputValue, RightInputValue;
+
+	bool bIsCombat;
+
+	UFUNCTION(Exec)
+	void LeiChangeCombatState() { bIsCombat = !bIsCombat; }
 };

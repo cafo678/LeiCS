@@ -9,7 +9,10 @@ void ALeiPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddMappingContext(DefaultMappingContext, 0);
+	if (ensure(DefaultMappingContext))
+	{
+		AddMappingContext(DefaultMappingContext, 0);
+	}
 }
 
 void ALeiPlayerController::AddMappingContext(const UInputMappingContext* InputMappingContext, int32 Priority) const

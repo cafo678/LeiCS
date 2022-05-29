@@ -2,6 +2,7 @@
 
 #include "LeiCharacter.h"
 
+#include "LeiPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -24,8 +25,28 @@ void ALeiCharacter::BeginPlay()
 	
 }
 
+void ALeiCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// We treat speed as the greater input movement axis value (Root Motion)
+	Speed = FMath::Abs(ForwardInputValue) >= FMath::Abs(RightInputValue) ? FMath::Abs(ForwardInputValue) : FMath::Abs(RightInputValue);
+
+	// We treat velocity based on the input movement values (Root Motion)
+	Velocity = FVector(ForwardInputValue, RightInputValue, 0.f);
+
+	// Since we are in Root Motion the movement component can't orientate towards the movement, so we do that manually here
+	// We want to orientate to the movement only when not in combat
+	if (!bIsCombat)
+	{
+		SetActorRelativeRotation(Velocity.ToOrientationRotator());
+	}
+}
+
 void ALeiCharacter::MoveForward(const float Value)
 {
+	ForwardInputValue = Value;
+	
 	FRotator ControlRotation = GetControlRotation();
 	ControlRotation.Pitch = 0.f;
 	ControlRotation.Roll = 0.f;
@@ -35,6 +56,8 @@ void ALeiCharacter::MoveForward(const float Value)
 
 void ALeiCharacter::MoveRight(const float Value)
 {
+	RightInputValue = Value;
+	
 	FRotator ControlRotation = GetControlRotation();
 	ControlRotation.Pitch = 0.f;
 	ControlRotation.Roll = 0.f;
@@ -45,9 +68,12 @@ void ALeiCharacter::MoveRight(const float Value)
 	AddMovementInput(ControlRightVector, Value);
 }
 
-void ALeiCharacter::Tick(float DeltaTime)
+ALeiPlayerController* ALeiCharacter::GetLeiPlayerController() const
 {
-	Super::Tick(DeltaTime);
-
+	ALeiPlayerController* MyPlayerController = Cast<ALeiPlayerController>(GetController());
+	
+	ensure(MyPlayerController);
+	
+	return MyPlayerController;
 }
 
