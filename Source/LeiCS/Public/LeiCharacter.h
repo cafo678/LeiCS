@@ -22,6 +22,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/* Components */
+	
+	UPROPERTY(BlueprintReadOnly)
+	UCharacterMovementComponent* CharacterMovementComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USpringArmComponent* SpringArmComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCameraComponent* CameraComponent = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* SwordMeshComponent = nullptr;
+
 	/* Input Actions */
 
 	UFUNCTION(BlueprintCallable, Category = "Locomotion")
@@ -33,36 +47,21 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	/* Input Variables for the Anim BP */
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	float Speed;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	FVector Velocity;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Input")
-	bool bHasUserReleasedMovementInput;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Gameplay")
 	bool bIsCombat;
+
+	// Used to decide when to enter stop locomotion state in the AnimBP
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	bool HasUserReleasedMovementInput;
+	
+	// Used to decide what animation to play when entering start locomotion state in the AnimBP
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	float GetMovementInputValue() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	ALeiPlayerController* GetLeiPlayerController() const;
 
 private:
-	UPROPERTY()
-	UCharacterMovementComponent* CharacterMovementComponent = nullptr;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	USpringArmComponent* SpringArmComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UCameraComponent* CameraComponent = nullptr;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UStaticMeshComponent* SwordMeshComponent = nullptr;
-
 	float ForwardInputValue, RightInputValue;
 	
 	UFUNCTION(Exec)
