@@ -10,5 +10,7 @@ UCLASS()
 class LEICS_API ALeiGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void StartPlay() override;
 };
