@@ -3,53 +3,55 @@
 
 #include "LeiPlayerCharacter.h"
 
+#include "LeiPlayerController.h"
+#include "Camera/CameraComponent.h"
 #include "Framework/LeiActionComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 ALeiPlayerCharacter::ALeiPlayerCharacter()
 {
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
+	SpringArmComponent->SetupAttachment(RootComponent);
+
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
+	CameraComponent->SetupAttachment(SpringArmComponent);
 }
 
 void ALeiPlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	ActionComponent->OnEnteredBattleState.AddDynamic(this, &ALeiPlayerCharacter::OnEnteredBattleState);
+	ActionComponent->OnEnteredBattleStateDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnEnteredBattleState);
+	ActionComponent->OnEnteredBattleStateDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnLockedActorChanged);
 }
 
-void ALeiPlayerCharacter::MoveForward(const float Value)
+void ALeiPlayerCharacter::OnEnteredBattleState(AActor* ActorInstigator)
 {
-	ForwardInputValue = Value;
+	// Change movement type
+	bUseControllerRotationYaw = true;
+	CharacterMovementComponent->bOrientRotationToMovement = false;
 	
-	FRotator ControlRotation = GetControlRotation();
-	ControlRotation.Pitch = 0.f;
-	ControlRotation.Roll = 0.f;
-
-	AddMovementInput(ControlRotation.Vector(), Value);
+	GetLeiPlayerController()->OnEnteredBattleState(ActorInstigator);
 }
 
-void ALeiPlayerCharacter::MoveRight(const float Value)
+void ALeiPlayerCharacter::OnLockedActorChanged(AActor* NewLockedActor)
 {
-	RightInputValue = Value;
-	
-	FRotator ControlRotation = GetControlRotation();
-	ControlRotation.Pitch = 0.f;
-	ControlRotation.Roll = 0.f;
-
-	// From Kismet Math Library GetRightVector()
-	const FVector ControlRightVector = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::Y);
-	
-	AddMovementInput(ControlRightVector, Value);
+	GetLeiPlayerController()->OnLockedActorChanged(NewLockedActor);
 }
 
-void ALeiPlayerCharacter::OnEnteredBattleState_Implementation(AActor* ActorInstigator)
+ALeiPlayerController* ALeiPlayerCharacter::GetLeiPlayerController() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("YOOOO"));
+	ALeiPlayerController* MyLeiPlayerController = Cast<ALeiPlayerController>(GetController());
+
+	ensure(MyLeiPlayerController);
+
+	return MyLeiPlayerController;
 }
 
-float ALeiPlayerCharacter::GetMovementInputValue() const
+FVector ALeiPlayerCharacter::GetCameraLocation() const
 {
-	const float AbsForwardInputValue = FMath::Abs(ForwardInputValue);
-	const float AbsRightInputValue = FMath::Abs(RightInputValue);
-
-	return AbsForwardInputValue >= AbsRightInputValue ? AbsForwardInputValue : AbsRightInputValue;
+	return CameraComponent->GetComponentLocation();
 }
+
+

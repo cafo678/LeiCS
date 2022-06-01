@@ -11,7 +11,8 @@
  * The action component will be responsible to handle all gameplay and combat related logic via Actions and Gameplay Tags
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnteredBattleState, AActor*, Instigator);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnteredBattleStateDelegate, AActor*, Instigator);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLockedActorChangedDelegate, AActor*, NewLockedActor);
 
 class ULeiAction;
 
@@ -30,7 +31,10 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 
 	UPROPERTY()
-	FOnEnteredBattleState OnEnteredBattleState;
+	FOnEnteredBattleStateDelegate OnEnteredBattleStateDelegate;
+	
+	UPROPERTY()
+	FOnLockedActorChangedDelegate OnLockedActorChangedDelegate;
 
 	UFUNCTION(BlueprintCallable, Category = "Lei | Action")
 	void AddAction(TSubclassOf<ULeiAction> ActionClass);
@@ -40,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Lei | Action")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(BlueprintCallable, Category = "Lei | Gameplay")
+	void OnEnteredBattleState(AActor* Instigator);
 	
 protected:
 	UPROPERTY()
@@ -47,4 +54,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Lei | Action")
 	TArray<TSubclassOf<ULeiAction>> DefaultActionsClasses;
+
+private:
+	UPROPERTY()
+	AActor* LockedActor;
 };

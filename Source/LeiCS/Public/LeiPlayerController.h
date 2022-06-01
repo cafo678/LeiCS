@@ -7,18 +7,63 @@
 #include "LeiPlayerController.generated.h"
 
 class UInputMappingContext;
+class ALeiPlayerCharacter;
 
 UCLASS()
 class LEICS_API ALeiPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-protected:
+public:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY(BlueprintReadWrite)
+	AActor* asdasd;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
 	UInputMappingContext* DefaultMappingContext = nullptr;
+	
+	// Speed for when the camera will do the longest route to lock the target
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
+	float LongestCameraRotationSpeed;
 
-private:
+	// Speed for when the camera will do the shortest route to lock the target
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
+	float ShortestCameraRotationSpeed;
+	
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
+	AActor* LockedActor;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Locomotion")
+	void MoveForward(const float Value);
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Locomotion")
+	void MoveRight(const float Value);
+
+public:
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnEnteredBattleState(AActor* ActorInstigator);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnLockedActorChanged(AActor* NewLockedActor);
+
+	// Used to decide when to enter stop locomotion state in the AnimBP
+	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Input")
+	bool HasUserReleasedMovementInput;
+	
+	// Used to decide what animation to play (run / walk) when entering start locomotion state in the AnimBP
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
+	float GetMovementInputValue() const;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
+	ALeiPlayerCharacter* GetLeiPlayerCharacter() const;
+	
+private:	
+	float ForwardInputValue, RightInputValue;
+	
 	void AddMappingContext(const UInputMappingContext* InputMappingContext, int32 Priority) const;
+
+	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };

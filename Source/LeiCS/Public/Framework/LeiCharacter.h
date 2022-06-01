@@ -25,12 +25,6 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly)
 	UCharacterMovementComponent* CharacterMovementComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
-	USpringArmComponent* SpringArmComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
-	UCameraComponent* CameraComponent = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
 	UStaticMeshComponent* SwordMeshComponent = nullptr;

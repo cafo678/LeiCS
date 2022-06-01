@@ -34,7 +34,6 @@ void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	if (CVarDebugTags.GetValueOnGameThread())
 	{
 		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
-		
 		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, DebugMsg);
 	}
 }
@@ -90,5 +89,16 @@ bool ULeiActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 
 	return false;
+}
+
+void ULeiActionComponent::OnEnteredBattleState(AActor* Instigator)
+{
+	if (!LockedActor)
+	{
+		LockedActor = Instigator;
+		OnLockedActorChangedDelegate.Broadcast(Instigator);
+	}
+	
+	OnEnteredBattleStateDelegate.Broadcast(Instigator);
 }
 
