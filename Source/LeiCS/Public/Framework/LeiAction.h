@@ -8,7 +8,7 @@
 #include "LeiAction.generated.h"
 
 /*
- * An Action is everything that can change combat and gameplay tags and can be activated if owned by an ActionComponent
+ * An Action is everything that can change combat and gameplay tags, have its own logic, and can be activated if owned by an ActionComponent
  */
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAction, Log, All);
@@ -47,7 +47,7 @@ protected:
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Lei | Action")
-	FName ActionName;
+	FGameplayTag ActionTagID;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Lei | Action")
 	bool CanStart(AActor* Instigator);

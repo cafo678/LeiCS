@@ -30,9 +30,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
 	UCameraComponent* CameraComponent = nullptr;
-	
-	UFUNCTION(Category = "Lei | Gameplay")
-	void OnEnteredBattleState(AActor* ActorInstigator);
 
 	UFUNCTION(Category = "Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);

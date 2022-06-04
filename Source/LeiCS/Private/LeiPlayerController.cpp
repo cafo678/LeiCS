@@ -2,9 +2,13 @@
 
 
 #include "LeiPlayerController.h"
+
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-#include "LeiPlayerCharacter.h"
+#include "Framework/LeiInputAction.h"
+#include "Framework/LeiActionComponent.h"
+#include "Framework/LeiActionComponentInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
 static TAutoConsoleVariable<bool> CVarDebugGameplay(TEXT("Lei.Debug.Gameplay"), true, TEXT("Enable the debug logging of Gameplay"), ECVF_Cheat);
@@ -16,6 +20,14 @@ void ALeiPlayerController::BeginPlay()
 	if (ensure(DefaultMappingContext))
 	{
 		AddMappingContext(DefaultMappingContext, 0);
+		SetupActionsInput();
+	}
+
+	if (GetPawn()->Implements<ULeiActionComponentInterface>())
+	{
+		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
+		
+		PawnActionComponent->OnLockedActorChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnLockedActorChanged);
 	}
 }
 
@@ -27,7 +39,7 @@ void ALeiPlayerController::Tick(float DeltaSeconds)
 	if (LockedActor)
 	{
 		const FVector LockedActorLocation = LockedActor->GetActorLocation();
-		const FVector CameraLocation = GetLeiPlayerCharacter()->GetCameraLocation();
+		const FVector CameraLocation = PlayerCameraManager->GetCameraLocation();
 
 		const FRotator DesiredCameraRotation = (LockedActorLocation - CameraLocation).Rotation();
 
@@ -45,20 +57,44 @@ void ALeiPlayerController::Tick(float DeltaSeconds)
 	}
 }
 
-void ALeiPlayerController::AddMappingContext(const UInputMappingContext* InputMappingContext, int32 Priority) const
+void ALeiPlayerController::AddMappingContext(UInputMappingContext* InputMappingContext, int32 Priority)
 {
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInputLocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
+		AppliedInputMappingContext.Add(InputMappingContext);
+		
 		EnhancedInputLocalPlayerSubsystem->ClearAllMappings();
 		EnhancedInputLocalPlayerSubsystem->AddMappingContext(InputMappingContext, Priority);
 	}
 }
 
-void ALeiPlayerController::OnEnteredBattleState_Implementation(AActor* ActorInstigator)
+void ALeiPlayerController::SetupActionsInput()
 {
-	if (CVarDebugGameplay.GetValueOnGameThread())
+	if (UEnhancedInputComponent* PlayerEnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::White, FString::Printf(TEXT("Entered Battle State by: %s"), *GetNameSafe(ActorInstigator)));
+		const UInputMappingContext* CurrentMappingContext = AppliedInputMappingContext.Last();
+
+		for (const FEnhancedActionKeyMapping& Mapping : CurrentMappingContext->GetMappings())
+		{
+			const UInputAction* Action = Mapping.Action;
+
+			if (Action)
+			{
+				PlayerEnhancedInputComponent->BindAction(Action, ETriggerEvent::Started, this, &ALeiPlayerController::StartActionByInput);
+			}
+		}
+	}
+}
+
+void ALeiPlayerController::StartActionByInput(const FInputActionInstance& ActionInstance)
+{
+	const ULeiInputAction* Action = Cast<ULeiInputAction>(ActionInstance.GetSourceAction());
+
+	if (Action && Action->ActionTag.IsValid() && GetPawn()->Implements<ULeiActionComponentInterface>())
+	{
+		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
+
+		PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag);
 	}
 }
 
@@ -101,13 +137,6 @@ void ALeiPlayerController::MoveRight(const float Value)
 		
 		MyPawn->AddMovementInput(ControlRightVector, Value);
 	}
-}
-
-ALeiPlayerCharacter* ALeiPlayerController::GetLeiPlayerCharacter() const
-{
-	ALeiPlayerCharacter* MyLeiPlayerCharacter = Cast<ALeiPlayerCharacter>(GetPawn());
-
-	return MyLeiPlayerCharacter ? MyLeiPlayerCharacter : nullptr;
 }
 
 float ALeiPlayerController::GetCameraDesiredSpeedByDelta(float Delta) const

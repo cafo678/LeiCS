@@ -20,5 +20,6 @@ void ALeiAICharacter::PostInitializeComponents()
 
 void ALeiAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	ActionComponent->StartActionByName(Pawn, "EnterCombatState");
+	// TODO: Potrebbe essere utile tenere comunque il by name mettere in BP
+	//ActionComponent->StartActionByName(Pawn, "EnterCombatState");
 }

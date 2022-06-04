@@ -51,17 +51,17 @@ void ULeiActionComponent::AddAction(TSubclassOf<ULeiAction> ActionClass)
 	}
 }
 
-bool ULeiActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
+bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID)
 {
 	for (ULeiAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActionTagID == ActionTagID)
 		{
 			if (!Action->CanStart(Instigator))
 			{
 				if (CVarDebugActions.GetValueOnGameThread())
 				{
-					FString FailedMessage = FString::Printf(TEXT("Failed to run %s"), *ActionName.ToString());
+					FString FailedMessage = FString::Printf(TEXT("Failed to run %s"), *ActionTagID.ToString());
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FailedMessage);
 				}
 				
@@ -77,11 +77,11 @@ bool ULeiActionComponent::StartActionByName(AActor* Instigator, FName ActionName
 	return false;
 }
 
-bool ULeiActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
+bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID)
 {
 	for (ULeiAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName && Action->IsRunning())
+		if (Action && Action->ActionTagID == ActionTagID && Action->IsRunning())
 		{
 			Action->StopAction(Instigator);
 			return true;
@@ -91,14 +91,9 @@ bool ULeiActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
-void ULeiActionComponent::OnEnteredBattleState(AActor* Instigator)
+void ULeiActionComponent::OnLockedActorChanged(AActor* NewLockedActor)
 {
-	if (!LockedActor)
-	{
-		LockedActor = Instigator;
-		OnLockedActorChangedDelegate.Broadcast(Instigator);
-	}
-	
-	OnEnteredBattleStateDelegate.Broadcast(Instigator);
+	LockedActor = NewLockedActor;
+	OnLockedActorChangedDelegate.Broadcast(NewLockedActor);
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "LeiPlayerController.generated.h"
 
@@ -17,9 +18,6 @@ class LEICS_API ALeiPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-
-	UPROPERTY(BlueprintReadWrite)
-	AActor* asdasd;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
@@ -43,8 +41,6 @@ protected:
 	void MoveRight(const float Value);
 
 public:
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnEnteredBattleState(AActor* ActorInstigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
@@ -57,13 +53,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	float GetMovementInputValue() const;
 
-	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
-	ALeiPlayerCharacter* GetLeiPlayerCharacter() const;
-	
 private:	
 	float ForwardInputValue, RightInputValue;
+
+	TArray<UInputMappingContext*> AppliedInputMappingContext;
 	
-	void AddMappingContext(const UInputMappingContext* InputMappingContext, int32 Priority) const;
+	void AddMappingContext(UInputMappingContext* InputMappingContext, int32 Priority);
+	void SetupActionsInput();
+	void StartActionByInput(const FInputActionInstance& ActionInstance);
 
 	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };

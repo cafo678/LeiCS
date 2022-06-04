@@ -8,7 +8,7 @@ DEFINE_LOG_CATEGORY(LogLeiAction);
 
 void ULeiAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogLeiAction, Warning, TEXT("Running %s"), *ActionName.ToString());
+	UE_LOG(LogLeiAction, Warning, TEXT("Running %s"), *ActionTagID.ToString());
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 	
@@ -22,7 +22,7 @@ void ULeiAction::StartAction_Implementation(AActor* Instigator)
 
 void ULeiAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s"), *ActionName.ToString());
+	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s"), *ActionTagID.ToString());
 
 	ensureAlways(bIsRunning);
 	
@@ -53,7 +53,8 @@ ULeiActionComponent* ULeiAction::GetOwningComponent() const
 
 UWorld* ULeiAction::GetWorld() const
 {
-	UActorComponent* ActorComponent = Cast<UActorComponent>(GetOuter());
+	const UActorComponent* ActorComponent = Cast<UActorComponent>(GetOuter());
+	
 	if (ActorComponent)
 	{
 		return ActorComponent->GetWorld();

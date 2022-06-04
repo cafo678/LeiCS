@@ -22,22 +22,21 @@ void ALeiPlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	ActionComponent->OnEnteredBattleStateDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnEnteredBattleState);
-	ActionComponent->OnEnteredBattleStateDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnLockedActorChanged);
-}
-
-void ALeiPlayerCharacter::OnEnteredBattleState(AActor* ActorInstigator)
-{
-	// Change movement type
-	bUseControllerRotationYaw = true;
-	CharacterMovementComponent->bOrientRotationToMovement = false;
-	
-	GetLeiPlayerController()->OnEnteredBattleState(ActorInstigator);
+	ActionComponent->OnLockedActorChangedDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnLockedActorChanged);
 }
 
 void ALeiPlayerCharacter::OnLockedActorChanged(AActor* NewLockedActor)
 {
-	GetLeiPlayerController()->OnLockedActorChanged(NewLockedActor);
+	if (NewLockedActor)
+	{
+		bUseControllerRotationYaw = true;
+		CharacterMovementComponent->bOrientRotationToMovement = false;
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		CharacterMovementComponent->bOrientRotationToMovement = true;
+	}
 }
 
 ALeiPlayerController* ALeiPlayerCharacter::GetLeiPlayerController() const
