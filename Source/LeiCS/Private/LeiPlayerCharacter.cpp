@@ -43,8 +43,6 @@ ALeiPlayerController* ALeiPlayerCharacter::GetLeiPlayerController() const
 {
 	ALeiPlayerController* MyLeiPlayerController = Cast<ALeiPlayerController>(GetController());
 
-	ensure(MyLeiPlayerController);
-
 	return MyLeiPlayerController;
 }
 

@@ -46,12 +46,18 @@ void ULeiActionComponent::AddAction(TSubclassOf<ULeiAction> ActionClass)
 		
 		if (ensure(NewAction))
 		{
+			if (CVarDebugActions.GetValueOnGameThread())
+			{
+				FString AddedMessage = FString::Printf(TEXT("Added Action: %s"), *NewAction->ActionTagID.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, AddedMessage);
+			}
+			
 			Actions.Add(NewAction);
 		}
 	}
 }
 
-bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID)
+bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, FGameplayTagContainer Context)
 {
 	for (ULeiAction* Action : Actions)
 	{
@@ -68,7 +74,7 @@ bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag Ac
 				continue;
 			}
 			
-			Action->StartAction(Instigator);
+			Action->StartAction(Instigator, Context);
 			
 			return true;
 		}

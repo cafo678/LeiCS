@@ -18,19 +18,19 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Lei | Utility")
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
 	ALeiPlayerController* GetLeiPlayerController() const;
 
 	FVector GetCameraLocation() const;
 
 protected:
 	/* Components */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	USpringArmComponent* SpringArmComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	UCameraComponent* CameraComponent = nullptr;
 
-	UFUNCTION(Category = "Lei | Gameplay")
+	UFUNCTION(Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
 };

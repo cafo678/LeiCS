@@ -81,6 +81,7 @@ void ALeiPlayerController::SetupActionsInput()
 			if (Action)
 			{
 				PlayerEnhancedInputComponent->BindAction(Action, ETriggerEvent::Started, this, &ALeiPlayerController::StartActionByInput);
+				PlayerEnhancedInputComponent->BindAction(Action, ETriggerEvent::Completed, this, &ALeiPlayerController::StopActionByInput);
 			}
 		}
 	}
@@ -94,7 +95,21 @@ void ALeiPlayerController::StartActionByInput(const FInputActionInstance& Action
 	{
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 
-		PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag);
+		FGameplayTagContainer Context;
+
+		PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag, Context);
+	}
+}
+
+void ALeiPlayerController::StopActionByInput(const FInputActionInstance& ActionInstance)
+{
+	const ULeiInputAction* Action = Cast<ULeiInputAction>(ActionInstance.GetSourceAction());
+
+	if (Action && Action->ActionTag.IsValid() && Action->bStopActionOnRelease && GetPawn()->Implements<ULeiActionComponentInterface>())
+	{
+		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
+
+		PawnActionComponent->StopActionByTagID(GetPawn(), Action->ActionTag);
 	}
 }
 

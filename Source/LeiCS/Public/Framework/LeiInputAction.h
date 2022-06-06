@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +9,7 @@
 
 /**
  * Custom Input Action with a GameplayTag associated for automatically firing Actions (see LeiPlayerController.cpp)
+ * and more custom functionalities
  */
 
 UCLASS()
@@ -19,4 +20,7 @@ class LEICS_API ULeiInputAction : public UInputAction
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Action)
 	FGameplayTag ActionTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Action)
+	bool bStopActionOnRelease;
 };

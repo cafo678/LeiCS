@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"EnhancedInput"
+				"EnhancedInput",
+				"AIModule"
 			]
 		}
 	],

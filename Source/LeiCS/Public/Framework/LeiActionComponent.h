@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
+#include "Engine/DataTable.h"
 #include "LeiActionComponent.generated.h"
 
 /*
@@ -14,6 +15,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLockedActorChangedDelegate, AActor*, NewLockedActor);
 
 class ULeiAction;
+class UAnimMontage;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEICS_API ULeiActionComponent : public UActorComponent
@@ -26,29 +28,29 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lei | Action")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ".Lei | Action")
 	FGameplayTagContainer ActiveGameplayTags;
 	
 	UPROPERTY()
 	FOnLockedActorChangedDelegate OnLockedActorChangedDelegate;
 
-	UFUNCTION(BlueprintCallable, Category = "Lei | Action")
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	void AddAction(TSubclassOf<ULeiAction> ActionClass);
 
-	UFUNCTION(BlueprintCallable, Category = "Lei | Action")
-	bool StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID);
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
+	bool StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, FGameplayTagContainer Context);
 
-	UFUNCTION(BlueprintCallable, Category = "Lei | Action")
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID);
 
-	UFUNCTION(BlueprintCallable, Category = "Lei | Gameplay")
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
 	
 protected:
 	UPROPERTY()
 	TArray<ULeiAction*> Actions;
 
-	UPROPERTY(EditAnywhere, Category = "Lei | Action")
+	UPROPERTY(EditAnywhere, Category = ".Lei | Action")
 	TArray<TSubclassOf<ULeiAction>> DefaultActionsClasses;
 
 private:

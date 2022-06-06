@@ -19,7 +19,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Lei | AI | Components")
+	UPROPERTY(VisibleAnywhere, Category = ".Lei | AI | Components")
 	UPawnSensingComponent* PawnSensingComponent = nullptr;
 
 private:

@@ -61,6 +61,7 @@ private:
 	void AddMappingContext(UInputMappingContext* InputMappingContext, int32 Priority);
 	void SetupActionsInput();
 	void StartActionByInput(const FInputActionInstance& ActionInstance);
+	void StopActionByInput(const FInputActionInstance& ActionInstance);
 
 	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };

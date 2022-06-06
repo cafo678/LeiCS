@@ -59,3 +59,74 @@ AActor* ULeiBlueprintFunctionLibrary::GetLockTarget(AActor* PlayerPawn, float Tr
 
 	return BestActorResult;
 }
+
+FGameplayTag ULeiBlueprintFunctionLibrary::MakeTagFromStringArray(TArray<FString>& Strings)
+{
+	FString ActionTagString;
+
+	for (const FString& String : Strings)
+	{
+		if (ActionTagString.IsEmpty())
+		{
+			ActionTagString = String;
+		}
+		else
+		{
+			ActionTagString = ActionTagString + TEXT(".") + String;
+		}
+	}
+	
+	const FName ActionTagName = FName(*ActionTagString);
+	const FGameplayTag ActionTag = FGameplayTag::RequestGameplayTag(ActionTagName);
+
+	return ActionTag;
+}
+
+void ULeiBlueprintFunctionLibrary::AddChildrenTagsToContainer(FGameplayTagContainer& FirstContainer, FGameplayTagContainer& SecondContainer)
+{
+	FGameplayTagContainer BackupContainer = FirstContainer;
+	FirstContainer = FGameplayTagContainer::EmptyContainer;
+	
+	for (auto CompareGameplayTag = SecondContainer.CreateConstIterator(); CompareGameplayTag; ++CompareGameplayTag)
+	{
+		for (auto SourceTag = BackupContainer.CreateConstIterator(); SourceTag; ++SourceTag)
+		{
+			if (CompareGameplayTag->MatchesTag(*SourceTag))
+			{
+				FirstContainer.AddTag(*CompareGameplayTag);
+			}
+		}
+	}
+}
+
+void ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(FGameplayTagContainer& FirstContainer, FGameplayTagContainer& SecondContainer)
+{
+	AddChildrenTagsToContainer(FirstContainer, SecondContainer);
+
+	SecondContainer.RemoveTags(FirstContainer);
+}
+
+FGameplayTag ULeiBlueprintFunctionLibrary::GetFirstChildrenTag(FGameplayTag Tag, FGameplayTagContainer& Container)
+{
+	FGameplayTag ReturnTag;
+	
+	for (auto ContainerTag = Container.CreateConstIterator(); ContainerTag; ++ContainerTag)
+	{
+		if (ContainerTag->MatchesTag(Tag))
+		{
+			ReturnTag = *ContainerTag;
+		}
+	}
+
+	return ReturnTag;
+}
+
+FString ULeiBlueprintFunctionLibrary::GetAbsoluteTagString(FGameplayTag Tag)
+{
+	FString LeftString, RightString;
+	const FString TagString = Tag.ToString();
+	
+	TagString.Split(TEXT("."), &LeftString, &RightString, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+
+	return RightString;
+}

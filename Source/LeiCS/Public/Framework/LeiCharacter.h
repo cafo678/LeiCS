@@ -29,9 +29,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UCharacterMovementComponent* CharacterMovementComponent = nullptr;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	UStaticMeshComponent* SwordMeshComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lei | Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	ULeiActionComponent* ActionComponent = nullptr;
 };

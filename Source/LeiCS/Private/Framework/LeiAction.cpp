@@ -2,18 +2,22 @@
 
 #include "Framework/LeiAction.h"
 
+#include "LeiBlueprintFunctionLibrary.h"
 #include "Framework/LeiActionComponent.h"
 
 DEFINE_LOG_CATEGORY(LogLeiAction);
 
-void ULeiAction::StartAction_Implementation(AActor* Instigator)
+void ULeiAction::StartAction_Implementation(AActor* Instigator, FGameplayTagContainer Context)
 {
 	UE_LOG(LogLeiAction, Warning, TEXT("Running %s"), *ActionTagID.ToString());
+
+	ContextTags = Context;
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 	
-	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTags);
-	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsForever);
+	ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(RemoveTags, ActionComponent->ActiveGameplayTags);
+	ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(RemoveTagsForever, ActionComponent->ActiveGameplayTags);
+
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsForever);
 	
@@ -36,11 +40,25 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 
 bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
-	const ULeiActionComponent* ActionComponent = GetOwningComponent();
+	ULeiActionComponent* ActionComponent = GetOwningComponent();
+
+	ULeiBlueprintFunctionLibrary::AddChildrenTagsToContainer(BlockedTags, ActionComponent->ActiveGameplayTags);
 
 	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || IsRunning())
 	{
 		return false;
+	}
+
+	if (RequiredTags.Num() > 0)
+	{
+		if (ActionComponent->ActiveGameplayTags.HasAll(RequiredTags))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	return true;
