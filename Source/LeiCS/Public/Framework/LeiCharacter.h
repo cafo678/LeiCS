@@ -7,11 +7,9 @@
 #include "GameFramework/Character.h"
 #include "LeiCharacter.generated.h"
 
-class USpringArmComponent;
-class UCameraComponent;
-class ALeiPlayerController;
 class UStaticMeshComponent;
 class ULeiActionComponent;
+class UMotionWarpingComponent;
 
 UCLASS()
 class LEICS_API ALeiCharacter : public ACharacter, public ILeiActionComponentInterface
@@ -20,6 +18,7 @@ class LEICS_API ALeiCharacter : public ACharacter, public ILeiActionComponentInt
 
 public:
 	ALeiCharacter();
+	virtual void BeginPlay() override;
 
 	virtual ULeiActionComponent* GetActionComponent_Implementation() const override { return ActionComponent; }
 
@@ -34,4 +33,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	ULeiActionComponent* ActionComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
+	UMotionWarpingComponent* MotionWarpingComponent = nullptr;
+
+	UFUNCTION()
+	void SetMaxWalkSpeed(float Value, float MaxValue, float MinValue);
 };

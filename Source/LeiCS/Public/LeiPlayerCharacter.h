@@ -7,6 +7,8 @@
 #include "LeiPlayerCharacter.generated.h"
 
 class ALeiPlayerController;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class LEICS_API ALeiPlayerCharacter : public ALeiCharacter
@@ -20,8 +22,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
 	ALeiPlayerController* GetLeiPlayerController() const;
-
-	FVector GetCameraLocation() const;
 
 protected:
 	/* Components */

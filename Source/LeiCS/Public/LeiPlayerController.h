@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "LeiPlayerController.generated.h"
@@ -23,11 +24,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
 	UInputMappingContext* DefaultMappingContext = nullptr;
 	
-	// Speed for when the camera will do the longest route to lock the target
+	/** Speed for when the camera will do the longest route to lock the target */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
 	float LongestCameraRotationSpeed;
 
-	// Speed for when the camera will do the shortest route to lock the target
+	/** Speed for when the camera will do the shortest route to lock the target */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
 	float ShortestCameraRotationSpeed;
 	
@@ -41,15 +42,17 @@ protected:
 	void MoveRight(const float Value);
 
 public:
-
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
 
-	// Used to decide when to enter stop locomotion state in the AnimBP
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnGameplayStateChanged(FGameplayTag NewStateTag);
+
+	/** Used to decide when to enter stop locomotion state in the AnimBP */
 	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Input")
 	bool HasUserReleasedMovementInput;
 	
-	// Used to decide what animation to play (run / walk) when entering start locomotion state in the AnimBP
+	/** Used to decide what animation to play (run / walk) when entering start locomotion state in the AnimBP */
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	float GetMovementInputValue() const;
 
@@ -65,3 +68,5 @@ private:
 
 	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };
+
+

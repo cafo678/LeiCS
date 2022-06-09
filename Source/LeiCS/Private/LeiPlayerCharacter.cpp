@@ -46,9 +46,4 @@ ALeiPlayerController* ALeiPlayerCharacter::GetLeiPlayerController() const
 	return MyLeiPlayerController;
 }
 
-FVector ALeiPlayerCharacter::GetCameraLocation() const
-{
-	return CameraComponent->GetComponentLocation();
-}
-
 

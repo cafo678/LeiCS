@@ -28,6 +28,7 @@ void ALeiPlayerController::BeginPlay()
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 		
 		PawnActionComponent->OnLockedActorChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnLockedActorChanged);
+		PawnActionComponent->OnGameplayStateChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnGameplayStateChanged);
 	}
 }
 
@@ -35,7 +36,7 @@ void ALeiPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
     			
-	// Keep camera on locked actor if we have one (therefore we are in combat) 
+	/** Keep camera on locked actor if we have one (therefore we are in combat) */
 	if (LockedActor)
 	{
 		const FVector LockedActorLocation = LockedActor->GetActorLocation();
@@ -95,9 +96,7 @@ void ALeiPlayerController::StartActionByInput(const FInputActionInstance& Action
 	{
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 
-		FGameplayTagContainer Context;
-
-		PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag, Context);
+		PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag);
 	}
 }
 
@@ -108,7 +107,7 @@ void ALeiPlayerController::StopActionByInput(const FInputActionInstance& ActionI
 	if (Action && Action->ActionTag.IsValid() && Action->bStopActionOnRelease && GetPawn()->Implements<ULeiActionComponentInterface>())
 	{
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
-
+		
 		PawnActionComponent->StopActionByTagID(GetPawn(), Action->ActionTag);
 	}
 }
@@ -121,6 +120,10 @@ void ALeiPlayerController::OnLockedActorChanged_Implementation(AActor* NewLocked
 	}
 
 	LockedActor = NewLockedActor;
+}
+
+void ALeiPlayerController::OnGameplayStateChanged_Implementation(FGameplayTag NewStateTag)
+{
 }
 
 void ALeiPlayerController::MoveForward(const float Value)
@@ -147,7 +150,7 @@ void ALeiPlayerController::MoveRight(const float Value)
 		Rotation.Pitch = 0.f;
 		Rotation.Roll = 0.f;
 
-		// From Kismet Math Library GetRightVector()
+		/** From Kismet Math Library GetRightVector() */
 		const FVector ControlRightVector = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 		
 		MyPawn->AddMovementInput(ControlRightVector, Value);

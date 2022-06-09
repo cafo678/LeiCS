@@ -8,7 +8,11 @@
 #include "LeiAction.generated.h"
 
 /*
- * An Action is everything that can change combat and gameplay tags, have its own logic, and can be activated if owned by an ActionComponent
+ * An Action is everything that can be executed from an ActionComponent
+ * All input player based gameplay elements will be actions, and can be used by AI as well
+ * It is ok to have base classes for similar actions but ultimately every action that differs on its core functionality (tags, input, different behaviour) should be its own class
+ * These are nice little, standalone packed assets that can be checked out singularly and edited without have to bother other major assets (Character or Player Controller)
+ * Actions apply Gameplay Effects to change Attributes
  */
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAction, Log, All);
@@ -21,40 +25,40 @@ class LEICS_API ULeiAction : public UObject
 	GENERATED_BODY()
 
 protected:
-	// This action executed grants these tags that will be removed when the action is stopped
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
+	/** This action executed grants these tags that will be removed when the action is stopped */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer GrantsTags;
 
-	// This action executed grants these tags that will NOT be removed when the action is stopped
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
+	/** This action executed grants these tags that will NOT be removed when the action is stopped */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer GrantsTagsForever;
 
-	// This action executed remove these tags that will be removed when the action is stopped
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
+	/** This action executed remove these tags that will be removed when the action is stopped */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer RemoveTags;
 
-	// This action executed removes these tags that will NOT be removed when the action is stopped
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
+	/** This action executed removes these tags that will NOT be removed when the action is stopped */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer RemoveTagsForever;
 
-	// This action will be executed only if the ActionComponent has any of these tags
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
+	/** This action will not be executed if the ActionComponent has any of these tags */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer BlockedTags;
-
-	// This action will not be executed if the ActionComponent has any of these tags
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
-	FGameplayTagContainer RequiredTags;
 	
-	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Tags")
-	FGameplayTagContainer ContextTags;
+	/** This action will be executed only if the ActionComponent has any of these tags */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	FGameplayTagContainer RequiredTags;
 
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	ULeiActionComponent* GetOwningComponent() const;
 
-	// Override to give a proper UWorld to a UObject
+	/** Override to give a proper UWorld to a UObject */
 	virtual UWorld* GetWorld() const override;
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action")
+	bool bAutoStart;
+	
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action")
 	FGameplayTag ActionTagID;
 
@@ -62,12 +66,12 @@ public:
 	bool CanStart(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
-	void StartAction(AActor* Instigator, FGameplayTagContainer Context);
+	void StartAction(AActor* Instigator);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = ".Lei | Action")
 	void StopAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool IsRunning() const { return bIsRunning; }
 
 private:

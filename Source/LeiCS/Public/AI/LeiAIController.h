@@ -6,12 +6,8 @@
 #include "AIController.h"
 #include "LeiAIController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class LEICS_API ALeiAIController : public AAIController
 {
 	GENERATED_BODY()
-	
 };

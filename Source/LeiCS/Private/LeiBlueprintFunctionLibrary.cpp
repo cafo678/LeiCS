@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+static TAutoConsoleVariable<bool> CVarDebugLockTrace(TEXT("Lei.Debug.LockTrace"), true, TEXT("Enable the debug trace of lock ability"), ECVF_Cheat);
+
 // TODO: probably can be better, can I do it in a single trace?
 AActor* ULeiBlueprintFunctionLibrary::GetLockTarget(AActor* PlayerPawn, float TraceMultiplier, FVector TraceShapeHalfSize,
 	TArray<TEnumAsByte<EObjectTypeQuery>> ActorTypeToQuery, ETraceTypeQuery TraceTypeQueryChannel)
@@ -18,9 +20,11 @@ AActor* ULeiBlueprintFunctionLibrary::GetLockTarget(AActor* PlayerPawn, float Tr
 	TArray<AActor*> ActorsToIgnore;
 	TArray<FHitResult> PawnsResults;
 
-	// Find pawns
+	const EDrawDebugTrace::Type Debugtrace = CVarDebugLockTrace.GetValueOnGameThread() ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None;
+
+	/** Find pawns */
 	bool bPawnsTrace = UKismetSystemLibrary::BoxTraceMultiForObjects(PlayerPawn, TraceStartLocation, TraceEndLocation, TraceShapeHalfSize, FRotator::ZeroRotator,
-		ActorTypeToQuery, false, ActorsToIgnore, EDrawDebugTrace::Persistent, PawnsResults, true);
+		ActorTypeToQuery, false, ActorsToIgnore, Debugtrace, PawnsResults, true);
 
 	if (!bPawnsTrace)
 	{
@@ -30,11 +34,11 @@ AActor* ULeiBlueprintFunctionLibrary::GetLockTarget(AActor* PlayerPawn, float Tr
 	TArray<AActor*> VisibleActors;
 	FHitResult VisibilityResult;
 
-	// Check which pawns are visible
+	/** Check which pawns are visible */
 	for (const FHitResult& Hit : PawnsResults)
 	{
 		bool bVisibilityTrace = UKismetSystemLibrary::LineTraceSingle(PlayerPawn, PlayerCameraLocation, Hit.Location, TraceTypeQueryChannel, false, ActorsToIgnore,
-			EDrawDebugTrace::Persistent, VisibilityResult, true);
+			Debugtrace, VisibilityResult, true);
 
 		if (!bVisibilityTrace)
 		{
@@ -45,7 +49,7 @@ AActor* ULeiBlueprintFunctionLibrary::GetLockTarget(AActor* PlayerPawn, float Tr
 	AActor* BestActorResult = nullptr;
 	float BestDistance = 0.f;
 
-	// Find the closest visible pawn to lock
+	/** Find the closest visible pawn to lock */
 	for (AActor* VisibleActor : VisibleActors)
 	{
 		float Distance = VisibleActor->GetDistanceTo(PlayerPawn);
@@ -82,30 +86,6 @@ FGameplayTag ULeiBlueprintFunctionLibrary::MakeTagFromStringArray(TArray<FString
 	return ActionTag;
 }
 
-void ULeiBlueprintFunctionLibrary::AddChildrenTagsToContainer(FGameplayTagContainer& FirstContainer, FGameplayTagContainer& SecondContainer)
-{
-	FGameplayTagContainer BackupContainer = FirstContainer;
-	FirstContainer = FGameplayTagContainer::EmptyContainer;
-	
-	for (auto CompareGameplayTag = SecondContainer.CreateConstIterator(); CompareGameplayTag; ++CompareGameplayTag)
-	{
-		for (auto SourceTag = BackupContainer.CreateConstIterator(); SourceTag; ++SourceTag)
-		{
-			if (CompareGameplayTag->MatchesTag(*SourceTag))
-			{
-				FirstContainer.AddTag(*CompareGameplayTag);
-			}
-		}
-	}
-}
-
-void ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(FGameplayTagContainer& FirstContainer, FGameplayTagContainer& SecondContainer)
-{
-	AddChildrenTagsToContainer(FirstContainer, SecondContainer);
-
-	SecondContainer.RemoveTags(FirstContainer);
-}
-
 FGameplayTag ULeiBlueprintFunctionLibrary::GetFirstChildrenTag(FGameplayTag Tag, FGameplayTagContainer& Container)
 {
 	FGameplayTag ReturnTag;
@@ -123,10 +103,15 @@ FGameplayTag ULeiBlueprintFunctionLibrary::GetFirstChildrenTag(FGameplayTag Tag,
 
 FString ULeiBlueprintFunctionLibrary::GetAbsoluteTagString(FGameplayTag Tag)
 {
-	FString LeftString, RightString;
-	const FString TagString = Tag.ToString();
+	if (Tag.IsValid())
+	{
+		FString LeftString, RightString;
+		const FString TagString = Tag.ToString();
 	
-	TagString.Split(TEXT("."), &LeftString, &RightString, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+		TagString.Split(TEXT("."), &LeftString, &RightString, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 
-	return RightString;
+		return RightString;
+	}
+
+	return TEXT("");
 }

@@ -7,44 +7,39 @@
 
 DEFINE_LOG_CATEGORY(LogLeiAction);
 
-void ULeiAction::StartAction_Implementation(AActor* Instigator, FGameplayTagContainer Context)
+void ULeiAction::StartAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogLeiAction, Warning, TEXT("Running %s"), *ActionTagID.ToString());
 
-	ContextTags = Context;
+	bIsRunning = true;
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 	
-	ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(RemoveTags, ActionComponent->ActiveGameplayTags);
-	ULeiBlueprintFunctionLibrary::RemoveChildrenTagsFromContainer(RemoveTagsForever, ActionComponent->ActiveGameplayTags);
-
+	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTags);
+	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsForever);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsForever);
-	
-	bIsRunning = true;
 }
 
 void ULeiAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s"), *ActionTagID.ToString());
+	ULeiActionComponent* ActionComponent = GetOwningComponent();
 
 	ensureAlways(bIsRunning);
 	
-	ULeiActionComponent* ActionComponent = GetOwningComponent();
+	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s"), *ActionTagID.ToString());
 	
+	bIsRunning = false;
+
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(RemoveTags);
-
-	bIsRunning = false;
 }
 
 bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
-	ULeiActionComponent* ActionComponent = GetOwningComponent();
-
-	ULeiBlueprintFunctionLibrary::AddChildrenTagsToContainer(BlockedTags, ActionComponent->ActiveGameplayTags);
-
-	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || IsRunning())
+	const ULeiActionComponent* ActionComponent = GetOwningComponent();
+	
+	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || bIsRunning)
 	{
 		return false;
 	}

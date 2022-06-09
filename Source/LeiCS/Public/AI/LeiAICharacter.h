@@ -12,17 +12,4 @@ UCLASS()
 class LEICS_API ALeiAICharacter : public ALeiCharacter
 {
 	GENERATED_BODY()
-
-public:
-	ALeiAICharacter();
-	
-	virtual void PostInitializeComponents() override;
-
-protected:
-	UPROPERTY(VisibleAnywhere, Category = ".Lei | AI | Components")
-	UPawnSensingComponent* PawnSensingComponent = nullptr;
-
-private:
-	UFUNCTION()
-	void OnPawnSeen(APawn* Pawn);
 };
