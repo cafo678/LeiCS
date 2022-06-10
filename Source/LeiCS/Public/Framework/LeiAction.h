@@ -56,12 +56,12 @@ protected:
 	virtual UWorld* GetWorld() const override;
 	
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Action")
+	FGameplayTag ActionTagID;
+	
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action")
 	bool bAutoStart;
 	
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action")
-	FGameplayTag ActionTagID;
-
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
 	bool CanStart(AActor* Instigator);
 

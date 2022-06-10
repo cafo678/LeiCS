@@ -17,6 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGa
 class ULeiAction;
 class ULeiAttributeSet;
 class UDataTable;
+class UActionPicker;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEICS_API ULeiActionComponent : public UActorComponent
@@ -32,8 +33,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ".Lei | Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ".Lei | Tags")
+	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Tags")
 	FGameplayTag ActionDirection;
+
+	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Tags")
+	FGameplayTag GameplayState;
 
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
 	AActor* LockedActor;
@@ -67,10 +71,18 @@ public:
 	/** Attributes */
 
 	UPROPERTY(EditAnywhere, Category = ".Lei | Attributes")
-	TSubclassOf<ULeiAttributeSet> AttributeSetClass;
+	TSubclassOf<ULeiAttributeSet> AttributeSetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Attributes")
 	ULeiAttributeSet* AttributeSet = nullptr;
+
+	/** Combo */
+
+	UPROPERTY(EditAnywhere, Category = ".Lei | Combo")
+	TSubclassOf<UActionPicker> ActionPickerClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Combo")
+	UActionPicker* ActionPicker = nullptr;
 
 protected:
 	UPROPERTY()

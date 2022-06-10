@@ -2,6 +2,7 @@
 
 #include "Framework/LeiActionComponent.h"
 
+#include "Framework/ActionPicker.h"
 #include "Framework/LeiAction.h"
 #include "Framework/LeiAttributeSet.h"
 
@@ -13,6 +14,12 @@ static TAutoConsoleVariable<bool> CVarDebugActions(TEXT("Lei.Debug.Actions"), tr
 ULeiActionComponent::ULeiActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	const FGameplayTag DefaultGameplayStateTag = FGameplayTag::RequestGameplayTag("GameplayState.Default");
+	GameplayState = DefaultGameplayStateTag;
+	
+	const FGameplayTag DefaultDirectionTag = FGameplayTag::RequestGameplayTag("Direction.None");
+	ActionDirection = DefaultDirectionTag;
 }
 
 void ULeiActionComponent::BeginPlay()
@@ -34,6 +41,11 @@ void ULeiActionComponent::BeginPlay()
 		
 		UE_LOG(LogLeiAttributes, Warning, TEXT("Attribute Set not set in the Action Component, Attributes initialized to default"));
 	}
+
+	if (ensureAlways(ActionPickerClass))
+	{
+		ActionPicker = NewObject<UActionPicker>(this, ActionPickerClass);
+	}
 }
 
 void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -42,7 +54,9 @@ void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	if (CVarDebugTags.GetValueOnGameThread())
 	{
-		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
+		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple() + "\nGameplayState: "
+			+ GameplayState.ToString() + "\nDirection: " + ActionDirection.ToString();
+		
 		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Blue, DebugMsg);
 	}
 

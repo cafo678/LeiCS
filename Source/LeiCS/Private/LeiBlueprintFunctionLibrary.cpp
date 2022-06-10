@@ -86,21 +86,6 @@ FGameplayTag ULeiBlueprintFunctionLibrary::MakeTagFromStringArray(TArray<FString
 	return ActionTag;
 }
 
-FGameplayTag ULeiBlueprintFunctionLibrary::GetFirstChildrenTag(FGameplayTag Tag, FGameplayTagContainer& Container)
-{
-	FGameplayTag ReturnTag;
-	
-	for (auto ContainerTag = Container.CreateConstIterator(); ContainerTag; ++ContainerTag)
-	{
-		if (ContainerTag->MatchesTag(Tag))
-		{
-			ReturnTag = *ContainerTag;
-		}
-	}
-
-	return ReturnTag;
-}
-
 FString ULeiBlueprintFunctionLibrary::GetAbsoluteTagString(FGameplayTag Tag)
 {
 	if (Tag.IsValid())

@@ -20,10 +20,6 @@ public:
 	/** Make a tag with every string in the array, every index is a children */
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	static FGameplayTag MakeTagFromStringArray(UPARAM(ref) TArray<FString>& Strings);
-
-	/** Get the first encountered children tag of the specified tag that is in the specified container */
-	UFUNCTION(BlueprintPure, Category = ".Lei | Tags")
-	static FGameplayTag GetFirstChildrenTag(FGameplayTag Tag, UPARAM(ref) FGameplayTagContainer& Container);
 	
 	/** Get a string representation of the last part of the tag */
 	UFUNCTION(BlueprintPure, Category = ".Lei | Tags")

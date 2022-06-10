@@ -39,7 +39,7 @@ bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
 	const ULeiActionComponent* ActionComponent = GetOwningComponent();
 	
-	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || bIsRunning)
+	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) /**|| bIsRunning*/)
 	{
 		return false;
 	}
