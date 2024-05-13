@@ -8,8 +8,8 @@ This also implements a simil GameplayAbility System.
 
 # Currently working on AI, may not funciton correctly
 
-Left Stick: Movement
-Right Stick: Camera
+Left Stick: Movement__
+Right Stick: Camera__
 
 Right Bumper: Attack State
 When in attack state:
