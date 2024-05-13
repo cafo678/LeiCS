@@ -8,17 +8,17 @@ This also implements a simil GameplayAbility System.
 
 # Currently working on AI, may not funciton correctly
 
-Left Stick: Movement__
-Right Stick: Camera__
+Left Stick: Movement  
+Right Stick: Camera  
 
-Right Bumper: Attack State
-When in attack state:
-RightStick: Directional Attack, combo if followed by another directional action at the right time
+Right Bumper: Attack State  
+When in attack state:  
+RightStick: Directional Attack, combo if followed by another directional action at the right time  
 
-Left Bumper: Defense State
-When in defense state:
-RightStick: Directional Defense, parry if timed correctly
+Left Bumper: Defense State  
+When in defense state:  
+RightStick: Directional Defense, parry if timed correctly  
 
-Right Stick Press: Lock on target
-When target locked:
-RightStick: Directional dodge
+Right Stick Press: Lock on target  
+When target locked:  
+RightStick: Directional dodge  
