@@ -55,6 +55,15 @@ protected:
 	FLeiAttribute Stamina;
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
+	FLeiAttribute Poise;
+
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
+	FLeiAttribute Attack;
+
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
+	FLeiAttribute Defense;
+
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
 	FLeiAttribute MaxWalkSpeed;
 
 	/** Speed fot the preparation Notify State of an action montage */

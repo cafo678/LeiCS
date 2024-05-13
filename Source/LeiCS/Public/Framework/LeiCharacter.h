@@ -18,11 +18,12 @@ class LEICS_API ALeiCharacter : public ACharacter, public ILeiActionComponentInt
 
 public:
 	ALeiCharacter();
-	virtual void BeginPlay() override;
 
 	virtual ULeiActionComponent* GetActionComponent_Implementation() const override { return ActionComponent; }
 
 protected:
+	virtual void BeginPlay() override;
+
 	/* Components */
 	
 	UPROPERTY(BlueprintReadOnly)

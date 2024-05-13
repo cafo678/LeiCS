@@ -11,6 +11,18 @@ ULeiAttributeSet::ULeiAttributeSet()
 	Stamina.MaxValue = 100.f;
 	Stamina.MinValue = 0.f;
 
+	Poise.Value = 100.f;
+	Poise.MaxValue = 100.f;
+	Poise.MinValue = 0.f;
+
+	Attack.Value = 50.f;
+	Attack.MaxValue = 255.f;
+	Attack.MinValue = 0.f;
+
+	Defense.Value = 40.f;
+	Defense.MaxValue = 255.f;
+	Defense.MinValue = 0.f;
+
 	MaxWalkSpeed.Value = 600.f;
 	MaxWalkSpeed.MaxValue = 900.f;
 	MaxWalkSpeed.MinValue = 0.f;

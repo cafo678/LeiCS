@@ -4,21 +4,32 @@
 
 #include "LeiBlueprintFunctionLibrary.h"
 #include "Framework/LeiActionComponent.h"
+#include "Framework/LeiAttributeSet.h"
+#include "LeiCS/LeiCS.h"
 
 DEFINE_LOG_CATEGORY(LogLeiAction);
+DEFINE_LOG_CATEGORY(LogLeiTags);
 
 void ULeiAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogLeiAction, Warning, TEXT("Running %s"), *ActionTagID.ToString());
+	UE_LOG(LogLeiAction, Warning, TEXT("Running %s from %s"), *ActionTagID.ToString(), *GetNameSafe(GetOwningComponent()->GetOwner()));
 
 	bIsRunning = true;
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
+
+	if (StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) >= StaminaCost)
+	{
+		ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, -StaminaCost);
+	}	
 	
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTags);
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsForever);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsForever);
+
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTags.ToString(), *RemoveTagsForever.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s added tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString(), *GrantsTagsForever.ToString());
 }
 
 void ULeiAction::StopAction_Implementation(AActor* Instigator)
@@ -26,36 +37,42 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 
 	ensureAlways(bIsRunning);
-	
-	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s"), *ActionTagID.ToString());
-	
-	bIsRunning = false;
+
+	UE_LOG(LogLeiAction, Warning, TEXT("Stopping %s from %s"), *ActionTagID.ToString(), *GetNameSafe(ActionComponent->GetOwner()));
+
+	if (bIsDirectional)
+	{
+		ensureAlways(ActionComponent->CurrentDirectionalActionDetails.Direction != TAG_Direction_None);
+
+		ActionComponent->ResetCurrentDirectionalActionDetails();
+	}
 
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(RemoveTags);
+
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s readded tags removed: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTags.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString());
+
+	bIsRunning = false;
 }
 
 bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
-	const ULeiActionComponent* ActionComponent = GetOwningComponent();
-	
-	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) /**|| bIsRunning*/)
+	ULeiActionComponent* ActionComponent = GetOwningComponent();
+
+	if ((StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) < StaminaCost)  ||
+		ActionComponent->ActiveGameplayTags.HasAny(BlockedTags)													||
+		!ActionComponent->ActiveGameplayTags.HasAll(RequiredTags)												||
+		bIsRunning)
 	{
 		return false;
 	}
 
-	if (RequiredTags.Num() > 0)
-	{
-		if (ActionComponent->ActiveGameplayTags.HasAll(RequiredTags))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+	return true;
+}
 
+bool ULeiAction::CanStop_Implementation(AActor* Instigator)
+{
 	return true;
 }
 

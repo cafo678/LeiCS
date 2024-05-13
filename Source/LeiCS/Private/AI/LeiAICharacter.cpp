@@ -5,3 +5,8 @@
 
 #include "Framework/LeiActionComponent.h"
 #include "Perception/PawnSensingComponent.h"
+
+ALeiAICharacter::ALeiAICharacter()
+{
+
+}

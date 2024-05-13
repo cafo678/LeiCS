@@ -2,7 +2,7 @@
 
 #include "Framework/LeiActionComponent.h"
 
-#include "Framework/ActionPicker.h"
+#include "Framework/LeiActionPicker.h"
 #include "Framework/LeiAction.h"
 #include "Framework/LeiAttributeSet.h"
 
@@ -15,11 +15,10 @@ ULeiActionComponent::ULeiActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	const FGameplayTag DefaultGameplayStateTag = FGameplayTag::RequestGameplayTag("GameplayState.Default");
-	GameplayState = DefaultGameplayStateTag;
-	
-	const FGameplayTag DefaultDirectionTag = FGameplayTag::RequestGameplayTag("Direction.None");
-	ActionDirection = DefaultDirectionTag;
+	GameplayState = TAG_GameplayState_Default;
+
+	CurrentDirectionalActionDetails.ActionTagID = TAG_Action_None;
+	CurrentDirectionalActionDetails.Direction = TAG_Direction_None;
 }
 
 void ULeiActionComponent::BeginPlay()
@@ -30,7 +29,7 @@ void ULeiActionComponent::BeginPlay()
 	{
 		AddAction(GetOwner(), ActionClass);
 	}
-
+	
 	if (AttributeSetClass)
 	{
 		AttributeSet = NewObject<ULeiAttributeSet>(this, AttributeSetClass);
@@ -41,11 +40,6 @@ void ULeiActionComponent::BeginPlay()
 		
 		UE_LOG(LogLeiAttributes, Warning, TEXT("Attribute Set not set in the Action Component, Attributes initialized to default"));
 	}
-
-	if (ensureAlways(ActionPickerClass))
-	{
-		ActionPicker = NewObject<UActionPicker>(this, ActionPickerClass);
-	}
 }
 
 void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -54,8 +48,10 @@ void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	if (CVarDebugTags.GetValueOnGameThread())
 	{
-		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple() + "\nGameplayState: "
-			+ GameplayState.ToString() + "\nDirection: " + ActionDirection.ToString();
+		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple() +
+			"\nGameplayState: " + GameplayState.ToString() +
+			"\nActionID: " + CurrentDirectionalActionDetails.ActionTagID.ToString() +
+			"\nDirection: " + CurrentDirectionalActionDetails.Direction.ToString();
 		
 		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Blue, DebugMsg);
 	}
@@ -81,7 +77,7 @@ void ULeiActionComponent::AddAction(AActor* Instigator, TSubclassOf<ULeiAction> 
 				if (CVarDebugActions.GetValueOnGameThread())
 				{
 					FString AddedMessage = FString::Printf(TEXT("Action of class: %s already in possession"), *GetNameSafe(ActionClass));
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, AddedMessage);
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, AddedMessage);
 				}
 				
 				return;
@@ -118,7 +114,7 @@ void ULeiActionComponent::RemoveAction(ULeiAction* ActionToRemove)
 	Actions.Remove(ActionToRemove);
 }
 
-bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID)
+bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, FGameplayTag DirectionTagID)
 {	
 	for (ULeiAction* Action : Actions)
 	{
@@ -126,21 +122,27 @@ bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag Ac
 		{
 			if (!Action->CanStart(Instigator))
 			{
-				if (CVarDebugActions.GetValueOnGameThread())
-				{
-					const FString FailedMessage = FString::Printf(TEXT("Failed to run %s"), *ActionTagID.ToString());
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FailedMessage);
-				}
+				UE_LOG(LogLeiAction, Warning, TEXT("Failed to run %s"), *ActionTagID.ToString());
 				
 				continue;
+			}
+
+			if (Action->bIsDirectional)
+			{
+				ensureAlways(DirectionTagID.IsValid() && DirectionTagID != TAG_Direction_None);
+
+				CurrentDirectionalActionDetails.ActionTagID = ActionTagID;
+				CurrentDirectionalActionDetails.Direction = DirectionTagID;
 			}
 			
 			Action->StartAction(Instigator);
 
+			OnActionStartedDelegate.Broadcast(ActionTagID, DirectionTagID);
+
 			return true;
 		}
 	}
-
+	
 	return false;
 }
 
@@ -150,6 +152,13 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 	{
 		if (Action && Action->ActionTagID == ActionTagID && Action->IsRunning())
 		{
+			if (!Action->CanStop(Instigator))
+			{
+				UE_LOG(LogLeiAction, Warning, TEXT("Failed to stop %s"), *ActionTagID.ToString());
+
+				continue;
+			}
+
 			Action->StopAction(Instigator);
 
 			return true;
@@ -157,6 +166,14 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 	}
 
 	return false;
+}
+
+void ULeiActionComponent::ResetCurrentDirectionalActionDetails()
+{
+	CurrentDirectionalActionDetails.ActionTagID = TAG_Action_None;
+	CurrentDirectionalActionDetails.Direction = TAG_Direction_None;
+
+	OnResetCurrentDirectionalActionDetailsDelegate.Broadcast();
 }
 
 void ULeiActionComponent::OnLockedActorChanged(AActor* NewLockedActor)

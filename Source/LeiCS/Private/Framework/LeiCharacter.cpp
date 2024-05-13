@@ -5,6 +5,7 @@
 #include "MotionWarpingComponent.h"
 #include "Framework/LeiAttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "LeiCS/LeiCS.h"
 
 ALeiCharacter::ALeiCharacter()
 {
@@ -24,12 +25,10 @@ void ALeiCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	static FGameplayTag MaxWalkSpeedAttributeTag = FGameplayTag::RequestGameplayTag("Attribute.MaxWalkSpeed");
-
 	FOnAttributeChangedDelegate Delegate;
 	Delegate.BindUFunction(this, "SetMaxWalkSpeed");
-	
-	ActionComponent->AttributeSet->AddAttributeChangedDelegate(MaxWalkSpeedAttributeTag, Delegate);
+
+	ActionComponent->AttributeSet->AddAttributeChangedDelegate(TAG_Attribute_MaxWalkSpeed, Delegate);
 }
 
 void ALeiCharacter::SetMaxWalkSpeed(float Value, float MaxValue, float MinValue)

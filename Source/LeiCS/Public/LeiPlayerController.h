@@ -16,13 +16,16 @@ class LEICS_API ALeiPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
 	UInputMappingContext* DefaultMappingContext = nullptr;
+
+	/** Error tolerance for the right stick when computing directional input */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
+	float RightStickErrorTolerance;
 	
 	/** Speed for when the camera will do the longest route to lock the target */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
@@ -41,6 +44,15 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Locomotion")
 	void MoveRight(const float Value);
 
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
+	void HandleRightStick(const float XValue, const float YValue);
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
+	void OnRightStickReleased();
+
+	UFUNCTION()
+	void CheckGameplayStateInput();
+
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
@@ -56,16 +68,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	float GetMovementInputValue() const;
 
-private:	
+private:
+	bool bCanFireNewAction = true;
+	
 	float ForwardInputValue, RightInputValue;
 
 	TArray<UInputMappingContext*> AppliedInputMappingContext;
-	
+
 	void AddMappingContext(UInputMappingContext* InputMappingContext, int32 Priority);
 	void SetupActionsInput();
 	void StartActionByInput(const FInputActionInstance& ActionInstance);
 	void StopActionByInput(const FInputActionInstance& ActionInstance);
 
+	FGameplayTag GetCorrectStatePlayerIsInBasedOnInput() const;
+	
+	FGameplayTag GetDirectionalActionIDToDoBasedOnState(FGameplayTag GameplayState) const;
+	bool IsGameplayStateActionKeyPressed(FGameplayTag GameplayStateToCheck) const;
+
+	FGameplayTag GetInputDirectionTag(const float XValue, const float YValue) const;
 	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };
 

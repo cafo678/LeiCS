@@ -16,6 +16,7 @@
  */
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAction, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogLeiTags, Log, All);
 
 class ULeiActionComponent;
 
@@ -33,11 +34,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer GrantsTagsForever;
 
-	/** This action executed remove these tags that will be removed when the action is stopped */
+	/** This action executed remove these tags that will be readded when the action is stopped */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer RemoveTags;
 
-	/** This action executed removes these tags that will NOT be removed when the action is stopped */
+	/** This action executed removes these tags that will NOT be readded when the action is stopped */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer RemoveTagsForever;
 
@@ -49,6 +50,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
 	FGameplayTagContainer RequiredTags;
 
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
+	float StaminaCost = 0.f;
+
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	ULeiActionComponent* GetOwningComponent() const;
 
@@ -56,14 +60,22 @@ protected:
 	virtual UWorld* GetWorld() const override;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Action")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Properties")
 	FGameplayTag ActionTagID;
 	
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action")
+	/** This action will start as soon as added to an action component */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
 	bool bAutoStart;
 	
+	/** This action is relative to a directional input */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
+	bool bIsDirectional;
+
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
 	bool CanStart(AActor* Instigator);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	bool CanStop(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
 	void StartAction(AActor* Instigator);
