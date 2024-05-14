@@ -1,5 +1,12 @@
 # Visual Studio 2015 user specific files
 .vs/
+.vsconfig/
+
+#IDE metadata
+**.idea/**
+
+#UpgradeLog
+UpgradeLog.htm
 
 # Compiled Object files
 *.slo
