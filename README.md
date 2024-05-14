@@ -6,8 +6,6 @@ A directional melee combat system, an evolved version of the "Sword" project, si
 This time in 3rd person and with some animation.
 This also implements a simil GameplayAbility System.
 
-# Currently working on AI, may not funciton correctly
-
 Left Stick: Movement  
 Right Stick: Camera  
 
@@ -21,4 +19,4 @@ RightStick: Directional Defense, parry if timed correctly
 
 Right Stick Press: Lock on target  
 When target locked:  
-RightStick: Directional dodge  
+RightStick: Directional dodge, combo if followed by another directional action at the right time  
