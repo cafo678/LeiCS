@@ -18,18 +18,18 @@ void ULeiAction::StartAction_Implementation(AActor* Instigator)
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 
-	if (StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) >= StaminaCost)
-	{
-		ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, -StaminaCost);
-	}	
+	ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, -StaminaCost);
+
+	RemoveTagsFiltered = RemoveTags.FilterExact(ActionComponent->ActiveGameplayTags);
+	GrantsTagsFiltered = GrantsTags.FilterExact(ActionComponent->ActiveGameplayTags);
 	
-	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTags);
+	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsFiltered);
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsForever);
-	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
+	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsFiltered);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsForever);
 
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTags.ToString(), *RemoveTagsForever.ToString());
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s added tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString(), *GrantsTagsForever.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTagsFiltered.ToString(), *RemoveTagsForever.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s added tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTagsFiltered.ToString(), *GrantsTagsForever.ToString());
 }
 
 void ULeiAction::StopAction_Implementation(AActor* Instigator)
@@ -45,13 +45,22 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 		ensureAlways(ActionComponent->CurrentDirectionalActionDetails.Direction != TAG_Direction_None);
 
 		ActionComponent->ResetCurrentDirectionalActionDetails();
+
+		/** If the action is stopping for an input reason (so the instigator is a controller), we are in a combo and we don't want to refill stamina.
+			If the action is stopping for another actor reason (so the instigator is not the owner of the action component), can be for various reasons
+			(being parried, receiving a hit) and we don't want to refill stamina. */
+		if (!Instigator->IsA(AController::StaticClass()) && Instigator == ActionComponent->GetOwner())
+		{
+			ActionComponent->OnComboEndedDelegate.Broadcast(ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina));
+			ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, BIG_NUMBER);
+		}
 	}
 
-	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
-	ActionComponent->ActiveGameplayTags.AppendTags(RemoveTags);
+	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTagsFiltered);
+	ActionComponent->ActiveGameplayTags.AppendTags(RemoveTagsFiltered);
 
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s readded tags removed: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTags.ToString());
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s readded tags removed: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTagsFiltered.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTagsFiltered.ToString());
 
 	bIsRunning = false;
 }
@@ -60,10 +69,12 @@ bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 
-	if ((StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) < StaminaCost)  ||
-		ActionComponent->ActiveGameplayTags.HasAny(BlockedTags)													||
-		!ActionComponent->ActiveGameplayTags.HasAll(RequiredTags)												||
-		bIsRunning)
+	if (StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) < StaminaCost)
+	{
+		return false;
+	}
+
+	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || !ActionComponent->ActiveGameplayTags.HasAll(RequiredTags) || bIsRunning)
 	{
 		return false;
 	}

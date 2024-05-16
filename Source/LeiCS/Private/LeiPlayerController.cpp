@@ -104,7 +104,7 @@ void ALeiPlayerController::StartActionByInput(const FInputActionInstance& Action
 
 			if (Action && Action->ActionTag.IsValid())
 			{
-				PawnActionComponent->StartActionByTagID(GetPawn(), Action->ActionTag, FGameplayTag());
+				PawnActionComponent->StartActionByTagID(this, Action->ActionTag, FGameplayTag());
 			}
 		}
 	}
@@ -118,7 +118,7 @@ void ALeiPlayerController::StopActionByInput(const FInputActionInstance& ActionI
 	{
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 		
-		PawnActionComponent->StopActionByTagID(GetPawn(), Action->ActionTag);
+		PawnActionComponent->StopActionByTagID(this, Action->ActionTag);
 	}
 }
 
@@ -187,34 +187,39 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 			{
 				bCanFireNewAction = false;
 
-				/** Stop the current action if any */
-				FGameplayTag CurrentDirectionalActionID = PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID;
-
-				if (CurrentDirectionalActionID != TAG_Action_None)
-				{
-					PawnActionComponent->StopActionByTagID(GetPawn(), PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID);
-				}
-				
 				/** Check if the player wants to change state */
 				FGameplayTag GameplayStateToGo = GetCorrectStatePlayerIsInBasedOnInput();
 
-				if (GameplayStateToGo != PawnActionComponent->GameplayState)
+				/** Build the new ActionID from the state the player wants to go */
+				const FGameplayTag NewActionTagID = GetDirectionalActionIDToDoBasedOnState(GameplayStateToGo);
+
+				/** If we have enough stamina for the new action... */
+				if (PawnActionComponent->HasEnoughStaminaForAction(NewActionTagID))
 				{
-					/** Stop the current state */
-					PawnActionComponent->StopActionByTagID(GetPawn(), ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(PawnActionComponent->GameplayState));
+					/** Stop the current action if any, that means we are in combo */
+					FGameplayTag CurrentDirectionalActionID = PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID;
 
-					if (GameplayStateToGo != TAG_GameplayState_Combat)
+					if (CurrentDirectionalActionID != TAG_Action_None)
 					{
-						/** Start the correct state */
-						PawnActionComponent->StartActionByTagID(GetPawn(), ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(GameplayStateToGo), FGameplayTag());
+						PawnActionComponent->StopActionByTagID(this, PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID);
 					}
+
+					/** If we have to change the gameplay state ... */
+					if (GameplayStateToGo != PawnActionComponent->GameplayState)
+					{
+						/** Stop the current state */
+						PawnActionComponent->StopActionByTagID(this, ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(PawnActionComponent->GameplayState));
+
+						if (GameplayStateToGo != TAG_GameplayState_Combat)
+						{
+							/** Start the correct state */
+							PawnActionComponent->StartActionByTagID(this, ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(GameplayStateToGo), FGameplayTag());
+						}
+					}
+
+					/** Start new action */
+					PawnActionComponent->StartActionByTagID(this, NewActionTagID, GetInputDirectionTag(XValue, YValue));
 				}
-
-				/** Build the new ActionID from the current state */		
-				const FGameplayTag NewActionTagID = GetDirectionalActionIDToDoBasedOnState(PawnActionComponent->GameplayState);
-
-				/** Start new action */
-				PawnActionComponent->StartActionByTagID(GetPawn(), NewActionTagID, GetInputDirectionTag(XValue, YValue));
 			}
 		}
 	}
@@ -292,11 +297,11 @@ void ALeiPlayerController::CheckGameplayStateInput()
 
 		if (GameplayStateToGo != PawnActionComponent->GameplayState)
 		{
-			PawnActionComponent->StopActionByTagID(GetPawn(), ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(PawnActionComponent->GameplayState));
+			PawnActionComponent->StopActionByTagID(this, ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(PawnActionComponent->GameplayState));
 
 			if (GameplayStateToGo != TAG_GameplayState_Combat)
 			{
-				PawnActionComponent->StartActionByTagID(GetPawn(), ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(GameplayStateToGo), FGameplayTag());
+				PawnActionComponent->StartActionByTagID(this, ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(GameplayStateToGo), FGameplayTag());
 			}
 		}
 	}

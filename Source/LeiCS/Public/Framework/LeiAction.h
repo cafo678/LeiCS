@@ -27,27 +27,27 @@ class LEICS_API ULeiAction : public UObject
 
 protected:
 	/** This action executed grants these tags that will be removed when the action is stopped */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer GrantsTags;
 
 	/** This action executed grants these tags that will NOT be removed when the action is stopped */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer GrantsTagsForever;
 
 	/** This action executed remove these tags that will be readded when the action is stopped */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer RemoveTags;
 
 	/** This action executed removes these tags that will NOT be readded when the action is stopped */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer RemoveTagsForever;
 
 	/** This action will not be executed if the ActionComponent has any of these tags */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer BlockedTags;
 	
 	/** This action will be executed only if the ActionComponent has any of these tags */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Action | Tags")
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer RequiredTags;
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
@@ -86,6 +86,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool IsRunning() const { return bIsRunning; }
 
+	float GetStaminaCost() const { return StaminaCost; }
+
 private:
 	bool bIsRunning = false;
+
+	FGameplayTagContainer RemoveTagsFiltered;
+	FGameplayTagContainer GrantsTagsFiltered;
 };

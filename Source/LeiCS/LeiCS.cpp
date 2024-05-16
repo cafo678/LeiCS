@@ -8,9 +8,9 @@ IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, LeiCS, "LeiCS");
 /** Singles */
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanProcessInput, "CanProcessInput")
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanProcessDirectionalInput, "CanProcessDirectionalInput")
-UE_DEFINE_GAMEPLAY_TAG(TAG_IsInParryWindow, "IsInParryWindow")
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanMove, "CanMove")
 UE_DEFINE_GAMEPLAY_TAG(TTAG_CanBeInterrupted, "CanBeInterrupted")
+UE_DEFINE_GAMEPLAY_TAG(TAG_IsInParryWindow, "IsInParryWindow")
 
 /** Actions */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Attack, "Action.Attack")
@@ -24,9 +24,9 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveHit, "Action.ReceiveHit")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ParryMovement, "Action.ParryMovement")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Rune, "Action.Rune")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RuneState, "Action.RuneState")
-UE_DEFINE_GAMEPLAY_TAG(TAG_Action_StaminaRegen, "Action.StaminaRegen")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Sprint, "Action.Sprint")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Dodge, "Action.Dodge")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveStagger, "Action.ReceiveStagger")
 
 /** Attributes */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Attack, "Attribute.Attack")
@@ -34,7 +34,6 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Defense, "Attribute.Defense")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health, "Attribute.Health")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_MaxWalkSpeed, "Attribute.MaxWalkSpeed")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Poise, "Attribute.Poise")
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_PreparationSpeed, "Attribute.PreparationSpeed")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Stamina, "Attribute.Stamina")
 
 /** Directions */
@@ -54,3 +53,4 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayState_Combat, "GameplayState.Combat")
 /** Status */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Status_Sprint, "Status.Sprint")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Status_Airborne, "Status.Airborne")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Status_Staggered, "Status.Staggered")

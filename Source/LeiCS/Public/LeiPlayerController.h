@@ -50,7 +50,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	void OnRightStickReleased();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	void CheckGameplayStateInput();
 
 public:

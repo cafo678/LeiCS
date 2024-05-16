@@ -12,10 +12,11 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAttributes, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCurrentDirectionalActionDetailsDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboEndedDelegate, float, StaminaValueWhenComboEnded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLockedActorChangedDelegate, AActor*, NewLockedActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGameplayTag, NewStateTag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStartedDelegate, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCurrentDirectionalActionDetailsDelegate);
 
 USTRUCT(BlueprintType)
 struct FDirectionalActionDetails
@@ -58,6 +59,9 @@ public:
 	AActor* LockedActor;
 	
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
+	FOnResetCurrentDirectionalActionDetailsDelegate OnResetCurrentDirectionalActionDetailsDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnLockedActorChangedDelegate OnLockedActorChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
@@ -67,7 +71,7 @@ public:
 	FOnActionStartedDelegate OnActionStartedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
-	FOnResetCurrentDirectionalActionDetailsDelegate OnResetCurrentDirectionalActionDetailsDelegate;
+	FOnComboEndedDelegate OnComboEndedDelegate;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
 	void OnLockedActorChanged(AActor* NewLockedActor);
@@ -90,6 +94,9 @@ public:
 	bool StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
+	bool HasEnoughStaminaForAction(FGameplayTag ActionTagID) const;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	void ResetCurrentDirectionalActionDetails();
 
 	/** Attributes */
@@ -100,10 +107,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Attributes")
 	ULeiAttributeSet* AttributeSet = nullptr;
 
+	UFUNCTION()
+	void OnPoiseChanged(float Value, float MaxValue, float MinValue);
+
 protected:
 	UPROPERTY()
 	TArray<ULeiAction*> Actions;
 	
 	UPROPERTY(EditAnywhere, Category = ".Lei | Action")
 	TArray<TSubclassOf<ULeiAction>> DefaultActionsClasses;	
+
+	FTimerHandle EndComboHandle;
 };
