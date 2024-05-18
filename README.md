@@ -20,3 +20,6 @@ RightStick: Directional Defense, parry if timed correctly
 Right Stick Press: Lock on target  
 When target locked:  
 RightStick: Directional dodge, combo if followed by another directional action at the right time  
+
+When parryed and the times slow down, only defense or dodge is allowed while the enemy can attack you.
+Viceversa, when a successful parry lands, the enemy will be slowed down and the player can attack.
