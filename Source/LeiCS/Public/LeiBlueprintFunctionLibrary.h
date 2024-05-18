@@ -26,4 +26,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	static FGameplayTag GetActionTagIDFromGameplayState(FGameplayTag GameplayState);
+
+	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
+	static bool IsDirectionalActionInputAllowed(FGameplayTagContainer ActiveGameplayTags, FGameplayTag DirectionalActionToDo);
 };

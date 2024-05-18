@@ -67,7 +67,7 @@ bool ULeiAttributeSet::ApplyAttributeChange(FGameplayTag AttributeTagID, float D
 
 		for (const auto& AttributeChangedDelegates : AttributeChangedDelegatesMap)
 		{
-			if (AttributeChangedDelegates.Key == AttributeTagID)
+			if (AttributeChangedDelegates.Key == AttributeTagID && AttributeChangedDelegates.Value.IsBound())
 			{
 				AttributeChangedDelegates.Value.Execute(Attribute->Value, Attribute->MaxValue, Attribute->MinValue);
 			}

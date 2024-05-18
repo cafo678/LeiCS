@@ -180,18 +180,17 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 				return;
 			}
 
+			/** Check if the player wants to change state */
+			FGameplayTag GameplayStateToGo = GetCorrectStatePlayerIsInBasedOnInput();
+
+			/** Build the new ActionID from the state the player wants to go */
+			const FGameplayTag NewActionTagID = GetDirectionalActionIDToDoBasedOnState(GameplayStateToGo);
+
 			/** Check we have a valid directional action input and use a DoOnce so we don't fire every ticking axis input */
-			if (PawnActionComponent->ActiveGameplayTags.HasTag(TAG_CanProcessDirectionalInput)  &&
-				GetInputDirectionTag(XValue, YValue) != TAG_Direction_None						&& 
-				bCanFireNewAction)
+			if (ULeiBlueprintFunctionLibrary::IsDirectionalActionInputAllowed(PawnActionComponent->ActiveGameplayTags, NewActionTagID) && 
+				GetInputDirectionTag(XValue, YValue) != TAG_Direction_None && bCanFireNewAction)
 			{
 				bCanFireNewAction = false;
-
-				/** Check if the player wants to change state */
-				FGameplayTag GameplayStateToGo = GetCorrectStatePlayerIsInBasedOnInput();
-
-				/** Build the new ActionID from the state the player wants to go */
-				const FGameplayTag NewActionTagID = GetDirectionalActionIDToDoBasedOnState(GameplayStateToGo);
 
 				/** If we have enough stamina for the new action... */
 				if (PawnActionComponent->HasEnoughStaminaForAction(NewActionTagID))

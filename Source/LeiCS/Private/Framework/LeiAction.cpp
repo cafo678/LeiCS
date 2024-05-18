@@ -21,15 +21,14 @@ void ULeiAction::StartAction_Implementation(AActor* Instigator)
 	ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, -StaminaCost);
 
 	RemoveTagsFiltered = RemoveTags.FilterExact(ActionComponent->ActiveGameplayTags);
-	GrantsTagsFiltered = GrantsTags.FilterExact(ActionComponent->ActiveGameplayTags);
 	
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsFiltered);
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsForever);
-	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsFiltered);
+	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantsTagsForever);
 
 	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTagsFiltered.ToString(), *RemoveTagsForever.ToString());
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s added tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTagsFiltered.ToString(), *GrantsTagsForever.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s added tags: %s %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString(), *GrantsTagsForever.ToString());
 }
 
 void ULeiAction::StopAction_Implementation(AActor* Instigator)
@@ -56,11 +55,11 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 		}
 	}
 
-	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTagsFiltered);
+	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
 	ActionComponent->ActiveGameplayTags.AppendTags(RemoveTagsFiltered);
 
 	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s readded tags removed: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTagsFiltered.ToString());
-	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTagsFiltered.ToString());
+	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString());
 
 	bIsRunning = false;
 }

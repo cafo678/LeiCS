@@ -92,5 +92,4 @@ private:
 	bool bIsRunning = false;
 
 	FGameplayTagContainer RemoveTagsFiltered;
-	FGameplayTagContainer GrantsTagsFiltered;
 };

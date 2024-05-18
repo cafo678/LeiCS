@@ -9,8 +9,9 @@ IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, LeiCS, "LeiCS");
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanProcessInput, "CanProcessInput")
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanProcessDirectionalInput, "CanProcessDirectionalInput")
 UE_DEFINE_GAMEPLAY_TAG(TAG_CanMove, "CanMove")
-UE_DEFINE_GAMEPLAY_TAG(TTAG_CanBeInterrupted, "CanBeInterrupted")
 UE_DEFINE_GAMEPLAY_TAG(TAG_IsInParryWindow, "IsInParryWindow")
+UE_DEFINE_GAMEPLAY_TAG(TAG_IsInHitWindow, "IsInHitWindow")
+UE_DEFINE_GAMEPLAY_TAG(TAG_IsRecoveringAfterParry, "IsRecoveringAfterParry")
 
 /** Actions */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Attack, "Action.Attack")
@@ -27,6 +28,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RuneState, "Action.RuneState")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Sprint, "Action.Sprint")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Dodge, "Action.Dodge")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveStagger, "Action.ReceiveStagger")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RecoverFromParry, "Action.RecoverFromParry")
 
 /** Attributes */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Attack, "Attribute.Attack")
