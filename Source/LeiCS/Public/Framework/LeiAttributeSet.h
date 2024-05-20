@@ -52,9 +52,6 @@ protected:
 	FLeiAttribute Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
-	FLeiAttribute Stamina;
-
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
 	FLeiAttribute Poise;
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
@@ -65,10 +62,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
 	FLeiAttribute MaxWalkSpeed;
-
-	/** Speed fot the preparation Notify State of an action montage */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
-	FLeiAttribute PreparationSpeed;
 	
 private:
 	TMultiMap<FGameplayTag, FOnAttributeChangedDelegate> AttributeChangedDelegatesMap;

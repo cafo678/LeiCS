@@ -173,35 +173,12 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 	return false;
 }
 
-bool ULeiActionComponent::HasEnoughStaminaForAction(FGameplayTag ActionTagID) const
-{
-	for (ULeiAction* Action : Actions)
-	{
-		if (Action && Action->ActionTagID == ActionTagID)
-		{
-			return Action->GetStaminaCost() <= AttributeSet->GetAttributeValue(TAG_Attribute_Stamina);
-		}
-	}
-	
-	return false;
-}
-
 void ULeiActionComponent::ResetCurrentDirectionalActionDetails()
 {
 	CurrentDirectionalActionDetails.ActionTagID = TAG_Action_None;
 	CurrentDirectionalActionDetails.Direction = TAG_Direction_None;
 
 	OnResetCurrentDirectionalActionDetailsDelegate.Broadcast();
-
-	/** Set a timer to refill stamina when the combo is ended */
-	GetWorld()->GetTimerManager().SetTimer(EndComboHandle, FTimerDelegate::CreateLambda([this]
-		{
-			if (CurrentDirectionalActionDetails.ActionTagID == TAG_Action_None && CurrentDirectionalActionDetails.Direction == TAG_Direction_None)
-			{
-				OnComboEndedDelegate.Broadcast(AttributeSet->GetAttributeValue(TAG_Attribute_Stamina));
-				AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, BIG_NUMBER);
-			}
-		}), 1.f, false);
 }
 
 void ULeiActionComponent::OnPoiseChanged(float Value, float MaxValue, float MinValue)

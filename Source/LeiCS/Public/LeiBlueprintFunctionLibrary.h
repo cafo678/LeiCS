@@ -29,4 +29,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	static bool IsDirectionalActionInputAllowed(FGameplayTagContainer ActiveGameplayTags, FGameplayTag DirectionalActionToDo);
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
+	static void SetDecalSize(UDecalComponent* DecalComponent, FVector SizeToSet);
 };

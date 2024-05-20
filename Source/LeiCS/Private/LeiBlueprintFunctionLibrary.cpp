@@ -2,6 +2,7 @@
 
 #include "LeiBlueprintFunctionLibrary.h"
 #include "LeiCS/LeiCS.h"
+#include "Components/DecalComponent.h"
 
 FGameplayTag ULeiBlueprintFunctionLibrary::MakeTagFromStringArray(TArray<FString>& Strings)
 {
@@ -58,4 +59,9 @@ bool ULeiBlueprintFunctionLibrary::IsDirectionalActionInputAllowed(FGameplayTagC
 	const bool bIsActionAllowedDuringRecovery = DirectionalActionToDo == TAG_Action_Defense || DirectionalActionToDo == TAG_Action_Dodge;
 
 	return bCanProcessDirectionalInput && (!bIsRecoveringAfterParry || (bIsRecoveringAfterParry && bIsActionAllowedDuringRecovery));
+}
+
+void ULeiBlueprintFunctionLibrary::SetDecalSize(UDecalComponent* DecalComponent, FVector SizeToSet)
+{
+	DecalComponent->DecalSize = SizeToSet;
 }

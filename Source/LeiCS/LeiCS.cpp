@@ -29,6 +29,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Sprint, "Action.Sprint")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Dodge, "Action.Dodge")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveStagger, "Action.ReceiveStagger")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RecoverFromParry, "Action.RecoverFromParry")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_FireCleave, "Action.FireCleave")
 
 /** Attributes */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Attack, "Attribute.Attack")
@@ -36,7 +37,6 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Defense, "Attribute.Defense")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health, "Attribute.Health")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_MaxWalkSpeed, "Attribute.MaxWalkSpeed")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Poise, "Attribute.Poise")
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Stamina, "Attribute.Stamina")
 
 /** Directions */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Direction_None, "Direction.None")

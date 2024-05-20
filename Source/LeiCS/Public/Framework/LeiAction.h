@@ -50,9 +50,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Tags")
 	FGameplayTagContainer RequiredTags;
 
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
-	float StaminaCost = 0.f;
-
 	UFUNCTION(BlueprintPure, Category = ".Lei | Action")
 	ULeiActionComponent* GetOwningComponent() const;
 
@@ -85,8 +82,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool IsRunning() const { return bIsRunning; }
-
-	float GetStaminaCost() const { return StaminaCost; }
 
 private:
 	bool bIsRunning = false;

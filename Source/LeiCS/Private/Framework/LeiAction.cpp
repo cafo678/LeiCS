@@ -18,8 +18,6 @@ void ULeiAction::StartAction_Implementation(AActor* Instigator)
 	
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
 
-	ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, -StaminaCost);
-
 	RemoveTagsFiltered = RemoveTags.FilterExact(ActionComponent->ActiveGameplayTags);
 	
 	ActionComponent->ActiveGameplayTags.RemoveTags(RemoveTagsFiltered);
@@ -44,15 +42,6 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 		ensureAlways(ActionComponent->CurrentDirectionalActionDetails.Direction != TAG_Direction_None);
 
 		ActionComponent->ResetCurrentDirectionalActionDetails();
-
-		/** If the action is stopping for an input reason (so the instigator is a controller), we are in a combo and we don't want to refill stamina.
-			If the action is stopping for another actor reason (so the instigator is not the owner of the action component), can be for various reasons
-			(being parried, receiving a hit) and we don't want to refill stamina. */
-		if (!Instigator->IsA(AController::StaticClass()) && Instigator == ActionComponent->GetOwner())
-		{
-			ActionComponent->OnComboEndedDelegate.Broadcast(ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina));
-			ActionComponent->AttributeSet->ApplyAttributeChange(TAG_Attribute_Stamina, BIG_NUMBER);
-		}
 	}
 
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantsTags);
@@ -67,11 +56,6 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator)
 bool ULeiAction::CanStart_Implementation(AActor* Instigator)
 {
 	ULeiActionComponent* ActionComponent = GetOwningComponent();
-
-	if (StaminaCost && ActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Stamina) < StaminaCost)
-	{
-		return false;
-	}
 
 	if (ActionComponent->ActiveGameplayTags.HasAny(BlockedTags) || !ActionComponent->ActiveGameplayTags.HasAll(RequiredTags) || bIsRunning)
 	{

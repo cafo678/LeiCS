@@ -7,10 +7,6 @@ ULeiAttributeSet::ULeiAttributeSet()
 	Health.MaxValue = 100.f;
 	Health.MinValue = 0.f;
 
-	Stamina.Value = 100.f;
-	Stamina.MaxValue = 100.f;
-	Stamina.MinValue = 0.f;
-
 	Poise.Value = 100.f;
 	Poise.MaxValue = 100.f;
 	Poise.MinValue = 0.f;
@@ -26,10 +22,6 @@ ULeiAttributeSet::ULeiAttributeSet()
 	MaxWalkSpeed.Value = 600.f;
 	MaxWalkSpeed.MaxValue = 900.f;
 	MaxWalkSpeed.MinValue = 0.f;
-	
-	PreparationSpeed.Value = 1.f;
-	PreparationSpeed.MaxValue = 2.f;
-	PreparationSpeed.MinValue = 0.f;
 }
 
 FLeiAttribute* ULeiAttributeSet::GetAttributeByTag(FGameplayTag AttributeTag)
