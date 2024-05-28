@@ -2,10 +2,10 @@
 
 
 #include "AI/LeiAIController.h"
-#include <Framework/LeiCharacter.h>
+#include "Framework/LeiCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Framework/LeiActionComponent.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 
 void ALeiAIController::BeginPlay()
 {
@@ -25,8 +25,5 @@ void ALeiAIController::OnCombatSceneEntered(AActor* Opponent)
 
 void ALeiAIController::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
 {
-	if (ActionTagID == TAG_Action_Attack)
-	{
-		GetBlackboardComponent()->SetValueAsBool("PlayerAttackJustStarted", true);
-	}
+	GetBlackboardComponent()->SetValueAsBool("PlayerActionJustStarted", true);
 }

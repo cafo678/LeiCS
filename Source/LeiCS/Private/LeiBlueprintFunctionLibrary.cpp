@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LeiBlueprintFunctionLibrary.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 #include "Components/DecalComponent.h"
 #include "Framework/LeiActionComponent.h"
 #include "Framework/LeiAttributeSet.h"

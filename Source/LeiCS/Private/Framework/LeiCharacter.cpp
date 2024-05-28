@@ -5,7 +5,7 @@
 #include "MotionWarpingComponent.h"
 #include "Framework/LeiAttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 
 ALeiCharacter::ALeiCharacter()
 {

@@ -5,7 +5,7 @@
 #include "LeiBlueprintFunctionLibrary.h"
 #include "Framework/LeiActionComponent.h"
 #include "Framework/LeiAttributeSet.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 
 DEFINE_LOG_CATEGORY(LogLeiAction);
 DEFINE_LOG_CATEGORY(LogLeiTags);

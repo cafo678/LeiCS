@@ -9,6 +9,7 @@
 class ALeiPlayerController;
 class USpringArmComponent;
 class UCameraComponent;
+class ULeiActionEquipComponent;
 
 UCLASS()
 class LEICS_API ALeiPlayerCharacter : public ALeiCharacter
@@ -22,6 +23,9 @@ public:
 	virtual void OnCombatSceneEntered_Implementation(AActor* Opponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
+	ULeiActionEquipComponent* GetActionEquipComponent() const;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
 	ALeiPlayerController* GetLeiPlayerController() const;
 
 protected:
@@ -31,6 +35,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
 	UCameraComponent* CameraComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ".Lei | Components")
+	ULeiActionEquipComponent* ActionEquipComponent = nullptr;
 
 	UFUNCTION(Category = ".Lei | Gameplay")
 	void OnOpponentSet(AActor* NewOpponent);

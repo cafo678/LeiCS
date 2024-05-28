@@ -4,7 +4,7 @@
 #include "Framework/LeiCombatSceneSubsystem.h"
 #include "Framework/LeiActionComponentInterface.h"
 #include "Framework/LeiActionComponent.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 
 void ULeiCombatSceneSubsystem::StartCombatScene(AActor* InPlayerCharacter, AActor* SceneEnemy)
 {

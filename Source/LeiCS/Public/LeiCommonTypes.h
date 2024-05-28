@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 #include "LeiCommonTypes.generated.h"
 
 UENUM(BlueprintType)

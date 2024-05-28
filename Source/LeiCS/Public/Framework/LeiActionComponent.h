@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
-#include "LeiCS/LeiCS.h"
+#include "LeiTags.h"
 #include "LeiCommonTypes.h"
 #include "LeiActionComponent.generated.h"
 

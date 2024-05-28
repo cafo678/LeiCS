@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LeiPlayerController.h"
+#include "Player/LeiPlayerController.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -13,8 +13,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "LeiCS/LeiCS.h"
 #include "LeiCommonTypes.h"
-#include <Framework/LeiCharacter.h>
+#include "Framework/LeiCharacter.h"
 #include "Framework/LeiComboHelper.h"
+#include "Player/LeiEnhancedPlayerInput.h"
+#include "Player/LeiActionEquipComponent.h"
+#include "Player/LeiPlayerCharacter.h"
 
 static TAutoConsoleVariable<bool> CVarDebugGameplay(TEXT("Lei.Debug.Gameplay"), true, TEXT("Enable the debug logging of Gameplay"), ECVF_Cheat);
 
@@ -189,12 +192,16 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 			/** Check if the player wants to change state */
 			FGameplayTag GameplayStateToGo = GetCorrectStatePlayerIsInBasedOnInput();
 
+			/** Get the direction the player has pressed */
+			FGameplayTag ActionDirection = GetInputDirectionTag(XValue, YValue);
+			if (ActionDirection == TAG_Direction_None) return;
+
 			/** Build the new ActionID from the state the player wants to go */
-			const FGameplayTag NewActionTagID = GetDirectionalActionIDToDoBasedOnState(GameplayStateToGo);
+			const FGameplayTag NewActionTagID = GetDirectionalActionIDToDo(GameplayStateToGo, ActionDirection);
+			if (NewActionTagID == TAG_Action_None) return;
 
 			/** Check we have a valid directional action input and use a DoOnce so we don't fire every ticking axis input */
-			if (ULeiBlueprintFunctionLibrary::IsDirectionalActionInputAllowed(PawnActionComponent->ActiveGameplayTags, NewActionTagID) && 
-				GetInputDirectionTag(XValue, YValue) != TAG_Direction_None && bCanFireNewAction)
+			if (ULeiBlueprintFunctionLibrary::IsDirectionalActionInputAllowed(PawnActionComponent->ActiveGameplayTags, NewActionTagID) && bCanFireNewAction)
 			{
 				bCanFireNewAction = false;
 
@@ -344,35 +351,69 @@ bool ALeiPlayerController::IsGameplayStateActionKeyPressed(FGameplayTag Gameplay
 {
 	ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 
+	/** Check that the key relative to that action is still pressed */
 	if (PawnActionComponent)
 	{
 		const FGameplayTag ActionIDToCheck = ULeiBlueprintFunctionLibrary::GetActionTagIDFromGameplayState(GameplayStateToCheck);
 
-		/** Check that the key relative to that action is still pressed */
-		if (UEnhancedInputComponent* PlayerEnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+		const ULeiEnhancedPlayerInput* EnhancedPlayerInput = Cast<ULeiEnhancedPlayerInput>(PlayerInput);
+
+		TArray<FKey> ActionKeys;
+
+		for (const FEnhancedActionKeyMapping& Mapping : EnhancedPlayerInput->GetEnhancedActionMappingsPublic())
 		{
-			const UInputMappingContext* CurrentMappingContext = AppliedInputMappingContext.Last();
+			const ULeiInputAction* Action = Cast<ULeiInputAction>(Mapping.Action);
 
-			for (const FEnhancedActionKeyMapping& Mapping : CurrentMappingContext->GetMappings())
+			if (Action && Action->ActionTag == ActionIDToCheck)
 			{
-				const ULeiInputAction* Action = Cast<ULeiInputAction>(Mapping.Action);
-
-				if (Action && Action->ActionTag == ActionIDToCheck)
-				{
-					const FKey KeyToCheckPressing = Mapping.Key;
-
-					return IsInputKeyDown(KeyToCheckPressing);
-				}
+				ActionKeys.AddUnique(Mapping.Key);
 			}
 		}
+
+		for (const FKey ActionKey : ActionKeys)
+		{
+			if (IsInputKeyDown(ActionKey))
+			{
+				return true;
+			}
+		}
+
+		return false;
+
 	}
 
 	return true;
 }
 
-FGameplayTag ALeiPlayerController::GetDirectionalActionIDToDoBasedOnState(FGameplayTag GameplayState) const
+FGameplayTag ALeiPlayerController::GetDirectionalActionIDToDo(FGameplayTag GameplayState, FGameplayTag ActionDirection) const
 {
-	const FString ActionString = GameplayState == TAG_GameplayState_Combat ? TEXT("Dodge") : ULeiBlueprintFunctionLibrary::GetAbsoluteTagString(GameplayState);
+	FString ActionString;
+
+	if (GameplayState == TAG_GameplayState_Combat)
+	{
+		ActionString = TEXT("Dodge");
+	}
+	
+	if (GameplayState == TAG_GameplayState_Rune)
+	{
+		const ALeiPlayerCharacter* LeiPlayerCharacter = Cast<ALeiPlayerCharacter>(GetPawn());
+		const ULeiActionEquipComponent* ActionEquipComponent = LeiPlayerCharacter->GetActionEquipComponent();
+
+		if (IsInputKeyDown(EKeys::Gamepad_LeftTrigger))
+		{
+			return ActionEquipComponent->GetEquippedAction(true, ActionDirection);
+		}
+
+		if (IsInputKeyDown(EKeys::Gamepad_RightTrigger))
+		{
+			return ActionEquipComponent->GetEquippedAction(false, ActionDirection);
+		}
+	}
+
+	if (GameplayState == TAG_GameplayState_Attack || GameplayState == TAG_GameplayState_Defense)
+	{
+		ActionString = ULeiBlueprintFunctionLibrary::GetAbsoluteTagString(GameplayState);
+	}
 
 	TArray<FString> ActionIDTagStrings;
 	ActionIDTagStrings.Add(TEXT("Action"));

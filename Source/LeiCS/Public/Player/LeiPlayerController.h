@@ -85,7 +85,7 @@ private:
 
 	FGameplayTag GetCorrectStatePlayerIsInBasedOnInput() const;
 	
-	FGameplayTag GetDirectionalActionIDToDoBasedOnState(FGameplayTag GameplayState) const;
+	FGameplayTag GetDirectionalActionIDToDo(FGameplayTag GameplayState, FGameplayTag ActionDirection) const;
 	bool IsGameplayStateActionKeyPressed(FGameplayTag GameplayStateToCheck) const;
 
 	FGameplayTag GetInputDirectionTag(const float XValue, const float YValue) const;
