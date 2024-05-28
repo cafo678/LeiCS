@@ -23,4 +23,7 @@ class LEICS_API ILeiActionComponentInterface
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = ".Lei | Action")
 	ULeiActionComponent* GetActionComponent() const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Combat")
+	void OnCombatSceneEntered(AActor* Opponent);
 };

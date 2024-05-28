@@ -4,18 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Framework/LeiCharacter.h"
-#include "LeiEnemyActorInterface.h"
 #include "LeiAICharacter.generated.h"
 
-class UPawnSensingComponent;
-
 UCLASS()
-class LEICS_API ALeiAICharacter : public ALeiCharacter, public ILeiEnemyActorInterface
+class LEICS_API ALeiAICharacter : public ALeiCharacter
 {
 	GENERATED_BODY()
 
 public:
 	ALeiAICharacter();
-
-	virtual void OnActorLocked_Implementation(const AActor* LockedActor) {}
 };

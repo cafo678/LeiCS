@@ -49,7 +49,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
-	FLeiAttribute Health;
+	FLeiAttribute Lives;
 
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Attributes")
 	FLeiAttribute Poise;

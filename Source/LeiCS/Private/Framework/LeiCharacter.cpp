@@ -21,6 +21,16 @@ ALeiCharacter::ALeiCharacter()
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarpingComponent");
 }
 
+void ALeiCharacter::OnCombatSceneEntered_Implementation(AActor* Opponent)
+{
+	OnCombatSceneEnteredDelegate.Broadcast(Opponent);
+
+	ActionComponent->SetOpponent(Opponent);
+
+	ULeiActionComponent* OppononentActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(Opponent);
+	OppononentActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiCharacter::OnOpponentActionStarted);
+}
+
 void ALeiCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,5 +44,10 @@ void ALeiCharacter::BeginPlay()
 void ALeiCharacter::SetMaxWalkSpeed(float Value, float MaxValue, float MinValue)
 {
 	CharacterMovementComponent->MaxWalkSpeed = Value;
+}
+
+void ALeiCharacter::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag DirectionTag)
+{
+	OnOpponentActionStartedDelegate.Broadcast(ActionTagID, DirectionTag);
 }
 

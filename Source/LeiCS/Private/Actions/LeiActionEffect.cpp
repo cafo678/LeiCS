@@ -26,14 +26,14 @@ void ULeiActionEffect::StartAction_Implementation(AActor* Instigator)
 	}
 }
 
-void ULeiActionEffect::StopAction_Implementation(AActor* Instigator)
+void ULeiActionEffect::StopAction_Implementation(AActor* Instigator, EActionStopReason ActionStopReason)
 {
 	if (GetWorld()->GetTimerManager().GetTimerRemaining(PeriodHandle) < KINDA_SMALL_NUMBER)
 	{
 		ExecutePeriodicEffect(Instigator);
 	}
 	
-	Super::StopAction_Implementation(Instigator);
+	Super::StopAction_Implementation(Instigator, ActionStopReason);
 
 	GetWorld()->GetTimerManager().ClearTimer(DurationHandle);
 	GetWorld()->GetTimerManager().ClearTimer(PeriodHandle);

@@ -30,11 +30,14 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Dodge, "Action.Dodge")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveStagger, "Action.ReceiveStagger")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RecoverFromParry, "Action.RecoverFromParry")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_FireCleave, "Action.FireCleave")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_PoiseRegen, "Action.PoiseRegen")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Deathblow, "Action.Deathblow")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Fireball, "Action.Fireball")
 
 /** Attributes */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Attack, "Attribute.Attack")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Defense, "Attribute.Defense")
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health, "Attribute.Health")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Lives, "Attribute.Lives")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_MaxWalkSpeed, "Attribute.MaxWalkSpeed")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Poise, "Attribute.Poise")
 

@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "LeiActionComponentInterface.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "LeiCharacter.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatSceneEnteredDelegate, AActor*, Opponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnOpponentActionStartedDelegate, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
 
 class UStaticMeshComponent;
 class ULeiActionComponent;
@@ -20,6 +24,13 @@ public:
 	ALeiCharacter();
 
 	virtual ULeiActionComponent* GetActionComponent_Implementation() const override { return ActionComponent; }
+	virtual void OnCombatSceneEntered_Implementation(AActor* Opponent) override;
+
+	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
+	FOnCombatSceneEnteredDelegate OnCombatSceneEnteredDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
+	FOnOpponentActionStartedDelegate OnOpponentActionStartedDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,4 +51,7 @@ protected:
 
 	UFUNCTION()
 	void SetMaxWalkSpeed(float Value, float MaxValue, float MinValue);
+	
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
 };

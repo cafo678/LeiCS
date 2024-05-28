@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "LeiCS/LeiCS.h"
+#include "LeiCommonTypes.h"
 #include "LeiActionComponent.generated.h"
 
 /** The action component will be responsible to handle all gameplay and combat related logic via Actions and Gameplay Tags */
@@ -13,24 +14,13 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAttributes, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCurrentDirectionalActionDetailsDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLockedActorChangedDelegate, AActor*, NewLockedActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpponentSetDelegate, AActor*, NewOpponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGameplayTag, NewStateTag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStartedDelegate, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
 
-USTRUCT(BlueprintType)
-struct FDirectionalActionDetails
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag ActionTagID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag Direction;
-};
-
 class ULeiAction;
 class ULeiAttributeSet;
+class ULeiComboHelper;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEICS_API ULeiActionComponent : public UActorComponent
@@ -51,29 +41,35 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Tags")
 	FDirectionalActionDetails CurrentDirectionalActionDetails;
 
+	/** Gameplay State */
+
 	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Tags")
 	FGameplayTag GameplayState;
 
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
+	void OnGameplayStateChanged(FGameplayTag NewStateTag);
+
+	/** Opponent */
+
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
-	AActor* LockedActor;
+	AActor* Opponent;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
+	void SetOpponent(AActor* NewOpponent);
+
+	/** Delegates */
 	
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnResetCurrentDirectionalActionDetailsDelegate OnResetCurrentDirectionalActionDetailsDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
-	FOnLockedActorChangedDelegate OnLockedActorChangedDelegate;
+	FOnOpponentSetDelegate OnOpponentSetDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnGameplayStateChangedDelegate OnGameplayStateChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnActionStartedDelegate OnActionStartedDelegate;
-
-	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
-	void OnLockedActorChanged(AActor* NewLockedActor);
-
-	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
-	void OnGameplayStateChanged(FGameplayTag NewStateTag);
 
 	/** Actions */
 	
@@ -84,10 +80,13 @@ public:
 	void RemoveAction(ULeiAction* ActionToRemove);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
+	void RemoveActionByTagID(FGameplayTag ActionTagID);
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, FGameplayTag DirectionTagID);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
-	bool StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID);
+	bool StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, EActionStopReason ActionStopReason = EActionStopReason::None);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	void ResetCurrentDirectionalActionDetails();
@@ -100,8 +99,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Attributes")
 	ULeiAttributeSet* AttributeSet = nullptr;
 
-	UFUNCTION()
-	void OnPoiseChanged(float Value, float MaxValue, float MinValue);
+	/** Combo Helper */
+
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Attributes")
+	ULeiComboHelper* ComboHelper = nullptr;
 
 protected:
 	UPROPERTY()

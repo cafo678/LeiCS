@@ -3,6 +3,8 @@
 #include "LeiBlueprintFunctionLibrary.h"
 #include "LeiCS/LeiCS.h"
 #include "Components/DecalComponent.h"
+#include "Framework/LeiActionComponent.h"
+#include "Framework/LeiAttributeSet.h"
 
 FGameplayTag ULeiBlueprintFunctionLibrary::MakeTagFromStringArray(TArray<FString>& Strings)
 {
@@ -64,4 +66,14 @@ bool ULeiBlueprintFunctionLibrary::IsDirectionalActionInputAllowed(FGameplayTagC
 void ULeiBlueprintFunctionLibrary::SetDecalSize(UDecalComponent* DecalComponent, FVector SizeToSet)
 {
 	DecalComponent->DecalSize = SizeToSet;
+}
+
+float ULeiBlueprintFunctionLibrary::GetDamageDelta(ULeiActionComponent* InstigatorActionComponent, ULeiActionComponent* TargetActionComponent)
+{
+	ensureAlways(InstigatorActionComponent && TargetActionComponent);
+
+	const float InstigatorAttack = InstigatorActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Attack);
+	const float TargetDefense = TargetActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Defense);
+
+	return InstigatorAttack - TargetDefense;
 }

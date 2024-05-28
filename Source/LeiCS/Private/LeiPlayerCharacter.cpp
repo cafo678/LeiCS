@@ -22,12 +22,19 @@ void ALeiPlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	ActionComponent->OnLockedActorChangedDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnLockedActorChanged);
+	ActionComponent->OnOpponentSetDelegate.AddDynamic(this, &ALeiPlayerCharacter::OnOpponentSet);
 }
 
-void ALeiPlayerCharacter::OnLockedActorChanged(AActor* NewLockedActor)
+void ALeiPlayerCharacter::OnCombatSceneEntered_Implementation(AActor* Opponent)
 {
-	if (NewLockedActor)
+	Super::OnCombatSceneEntered_Implementation(Opponent);
+
+	ActionComponent->StartActionByTagID(this, TAG_Action_CombatState, FGameplayTag());
+}
+
+void ALeiPlayerCharacter::OnOpponentSet(AActor* NewOpponent)
+{
+	if (NewOpponent)
 	{
 		bUseControllerRotationYaw = true;
 		CharacterMovementComponent->bOrientRotationToMovement = false;

@@ -2,14 +2,14 @@
 
 #include "Framework/LeiActionComponent.h"
 
-#include "Framework/LeiActionPicker.h"
 #include "Framework/LeiAction.h"
 #include "Framework/LeiAttributeSet.h"
+#include "Framework/LeiComboHelper.h"
 
 DEFINE_LOG_CATEGORY(LogLeiAttributes);
 
 static TAutoConsoleVariable<bool> CVarDebugTags(TEXT("Lei.Debug.Tags"), true, TEXT("Enable the debug logging of gameplay tags"), ECVF_Cheat);
-static TAutoConsoleVariable<bool> CVarDebugActions(TEXT("Lei.Debug.Actions"), true, TEXT("Enable the debug logging of Actions"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarDebugActions(TEXT("Lei.Debug.Actions"), false, TEXT("Enable the debug logging of Actions"), ECVF_Cheat);
 
 ULeiActionComponent::ULeiActionComponent()
 {
@@ -24,6 +24,8 @@ ULeiActionComponent::ULeiActionComponent()
 void ULeiActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ComboHelper = NewObject<ULeiComboHelper>(this, ULeiComboHelper::StaticClass());
 
 	for (const TSubclassOf<ULeiAction> ActionClass : DefaultActionsClasses)
 	{
@@ -40,11 +42,6 @@ void ULeiActionComponent::BeginPlay()
 		
 		UE_LOG(LogLeiAttributes, Warning, TEXT("Attribute Set not set in the Action Component, Attributes initialized to default"));
 	}
-
-	FOnAttributeChangedDelegate Delegate;
-	Delegate.BindUFunction(this, "OnPoiseChanged");
-
-	AttributeSet->AddAttributeChangedDelegate(TAG_Attribute_Poise, Delegate);
 }
 
 void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -55,8 +52,8 @@ void ULeiActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	{
 		const FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple() +
 			"\nGameplayState: " + GameplayState.ToString() +
-			"\nActionID: " + CurrentDirectionalActionDetails.ActionTagID.ToString() +
-			"\nDirection: " + CurrentDirectionalActionDetails.Direction.ToString();
+			"\nCurrentActionID: " + CurrentDirectionalActionDetails.ActionTagID.ToString() +
+			"\nCurrentDirection: " + CurrentDirectionalActionDetails.Direction.ToString();
 		
 		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Blue, DebugMsg);
 	}
@@ -93,6 +90,11 @@ void ULeiActionComponent::AddAction(AActor* Instigator, TSubclassOf<ULeiAction> 
 		
 		if (ensure(NewAction) && !Actions.Contains(NewAction))
 		{
+			if (NewAction->ComboActionDetailsList.Num())
+			{
+				ComboHelper->RegisterComboActionInformation(NewAction->ActionTagID, NewAction->ComboActionDetailsList);
+			}
+
 			if (CVarDebugActions.GetValueOnGameThread())
 			{
 				const FString AddedMessage = FString::Printf(TEXT("Added Action: %s"), *NewAction->ActionTagID.ToString());
@@ -116,7 +118,25 @@ void ULeiActionComponent::RemoveAction(ULeiAction* ActionToRemove)
 		return;
 	}
 
+	if (ActionToRemove->ComboActionDetailsList.Num())
+	{
+		ComboHelper->RemoveComboActionInformation(ActionToRemove->ActionTagID);
+	}
+
 	Actions.Remove(ActionToRemove);
+}
+
+void ULeiActionComponent::RemoveActionByTagID(FGameplayTag ActionTagID)
+{
+	for (ULeiAction* Action : Actions)
+	{
+		if (Action && Action->ActionTagID == ActionTagID)
+		{
+			RemoveAction(Action);
+
+			return;
+		}
+	}
 }
 
 bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, FGameplayTag DirectionTagID)
@@ -151,7 +171,7 @@ bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag Ac
 	return false;
 }
 
-bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID)
+bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, EActionStopReason ActionStopReason)
 {
 	for (ULeiAction* Action : Actions)
 	{
@@ -164,7 +184,7 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 				continue;
 			}
 
-			Action->StopAction(Instigator);
+			Action->StopAction(Instigator, ActionStopReason);
 
 			return true;
 		}
@@ -181,19 +201,10 @@ void ULeiActionComponent::ResetCurrentDirectionalActionDetails()
 	OnResetCurrentDirectionalActionDetailsDelegate.Broadcast();
 }
 
-void ULeiActionComponent::OnPoiseChanged(float Value, float MaxValue, float MinValue)
+void ULeiActionComponent::SetOpponent(AActor* NewOpponent)
 {
-	if (Value == 0.f)
-	{
-		StopActionByTagID(GetOwner(), TAG_Action_ReceiveHit);
-		StartActionByTagID(GetOwner(), TAG_Action_ReceiveStagger, FGameplayTag());
-	}
-}
-
-void ULeiActionComponent::OnLockedActorChanged(AActor* NewLockedActor)
-{
-	LockedActor = NewLockedActor;
-	OnLockedActorChangedDelegate.Broadcast(NewLockedActor);
+	Opponent = NewOpponent;
+	OnOpponentSetDelegate.Broadcast(NewOpponent);
 }
 
 void ULeiActionComponent::OnGameplayStateChanged(FGameplayTag NewStateTag)

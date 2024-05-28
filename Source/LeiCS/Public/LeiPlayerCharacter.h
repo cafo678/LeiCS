@@ -19,6 +19,7 @@ public:
 	ALeiPlayerCharacter();
 
 	virtual void PostInitializeComponents() override;
+	virtual void OnCombatSceneEntered_Implementation(AActor* Opponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
 	ALeiPlayerController* GetLeiPlayerController() const;
@@ -32,5 +33,5 @@ protected:
 	UCameraComponent* CameraComponent = nullptr;
 
 	UFUNCTION(Category = ".Lei | Gameplay")
-	void OnLockedActorChanged(AActor* NewLockedActor);
+	void OnOpponentSet(AActor* NewOpponent);
 };

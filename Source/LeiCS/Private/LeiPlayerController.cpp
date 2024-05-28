@@ -12,6 +12,9 @@
 #include "Framework/LeiActionComponentInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "LeiCS/LeiCS.h"
+#include "LeiCommonTypes.h"
+#include <Framework/LeiCharacter.h>
+#include "Framework/LeiComboHelper.h"
 
 static TAutoConsoleVariable<bool> CVarDebugGameplay(TEXT("Lei.Debug.Gameplay"), true, TEXT("Enable the debug logging of Gameplay"), ECVF_Cheat);
 
@@ -29,10 +32,13 @@ void ALeiPlayerController::BeginPlay()
 	{
 		ULeiActionComponent* PawnActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(GetPawn());
 		
-		PawnActionComponent->OnLockedActorChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnLockedActorChanged);
+		PawnActionComponent->OnOpponentSetDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentSet);
 		PawnActionComponent->OnGameplayStateChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnGameplayStateChanged);
 		PawnActionComponent->OnResetCurrentDirectionalActionDetailsDelegate.AddDynamic(this, &ALeiPlayerController::CheckGameplayStateInput);
 	}
+
+	ALeiCharacter* ControlledCharacter = Cast<ALeiCharacter>(GetPawn());
+	ControlledCharacter->OnOpponentActionStartedDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentActionStarted);
 }
 
 void ALeiPlayerController::Tick(float DeltaSeconds)
@@ -40,12 +46,12 @@ void ALeiPlayerController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
     			
 	/** Keep camera on locked actor if we have one (therefore we are in combat) */
-	if (LockedActor)
+	if (Opponent)
 	{
-		const FVector LockedActorLocation = LockedActor->GetActorLocation();
+		const FVector OpponentLocation = Opponent->GetActorLocation();
 		const FVector CameraLocation = PlayerCameraManager->GetCameraLocation();
 
-		FRotator DesiredCameraRotation = (LockedActorLocation - CameraLocation).Rotation();
+		FRotator DesiredCameraRotation = (OpponentLocation - CameraLocation).Rotation();
 		DesiredCameraRotation.Pitch = 0.f;
 
 		const float DeltaYaw = FMath::Abs(DesiredCameraRotation.Yaw - GetControlRotation().Yaw);
@@ -172,7 +178,7 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 		if (PawnActionComponent->ActiveGameplayTags.HasTag(TAG_CanProcessInput))
 		{
 			/** If default state or in combat but without any locked actor just move the camera */
-			if (PawnActionComponent->GameplayState == TAG_GameplayState_Default || (PawnActionComponent->GameplayState == TAG_GameplayState_Combat && !LockedActor))
+			if (PawnActionComponent->GameplayState == TAG_GameplayState_Default || (PawnActionComponent->GameplayState == TAG_GameplayState_Combat && !Opponent))
 			{
 				AddYawInput(XValue);
 				AddPitchInput(YValue);
@@ -192,12 +198,20 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 			{
 				bCanFireNewAction = false;
 
-				/** Stop the current action if any, that means we are in combo */
-				FGameplayTag CurrentDirectionalActionID = PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID;
+				FDirectionalActionDetails CurrentActionDetails = PawnActionComponent->CurrentDirectionalActionDetails;
 
-				if (CurrentDirectionalActionID != TAG_Action_None)
+				/** If the action we want to do has combo restrictions check that we are allowed to do it */
+				if (PawnActionComponent->ComboHelper->IsComboAllowed(NewActionTagID, CurrentActionDetails))
 				{
-					PawnActionComponent->StopActionByTagID(this, PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID);
+					/** Stop the action if any and cotinue */
+					if (CurrentActionDetails.ActionTagID != TAG_Action_None)
+					{
+						PawnActionComponent->StopActionByTagID(this, PawnActionComponent->CurrentDirectionalActionDetails.ActionTagID);
+					}
+				}
+				else
+				{
+					return;
 				}
 
 				/** If we have to change the gameplay state ... */
@@ -267,14 +281,14 @@ float ALeiPlayerController::GetCameraDesiredSpeedByDelta(float Delta) const
 	return DesiredSpeed;
 }
 
-void ALeiPlayerController::OnLockedActorChanged_Implementation(AActor* NewLockedActor)
+void ALeiPlayerController::OnOpponentSet_Implementation(AActor* NewOpponent)
 {
 	if (CVarDebugGameplay.GetValueOnGameThread())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Locked Actor changed: %s"), *GetNameSafe(NewLockedActor)));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Opponent changed: %s"), *GetNameSafe(NewOpponent)));
 	}
 
-	LockedActor = NewLockedActor;
+	Opponent = NewOpponent;
 }
 
 void ALeiPlayerController::OnGameplayStateChanged_Implementation(FGameplayTag NewStateTag)
@@ -300,6 +314,10 @@ void ALeiPlayerController::CheckGameplayStateInput()
 			}
 		}
 	}
+}
+
+void ALeiPlayerController::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
+{
 }
 
 FGameplayTag ALeiPlayerController::GetCorrectStatePlayerIsInBasedOnInput() const

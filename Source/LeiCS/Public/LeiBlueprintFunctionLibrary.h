@@ -7,6 +7,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "LeiBlueprintFunctionLibrary.generated.h"
 
+class ULeiActionComponent;
+
 UCLASS()
 class LEICS_API ULeiBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
@@ -32,4 +34,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Utility")
 	static void SetDecalSize(UDecalComponent* DecalComponent, FVector SizeToSet);
+
+	UFUNCTION(BlueprintPure, Category = ".Lei | Gameplay")
+	static float GetDamageDelta(ULeiActionComponent* InstigatorActionComponent, ULeiActionComponent* TargetActionComponent);
 };

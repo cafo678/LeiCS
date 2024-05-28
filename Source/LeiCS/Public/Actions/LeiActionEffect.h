@@ -15,7 +15,7 @@ class LEICS_API ULeiActionEffect : public ULeiAction
 
 public:
 	virtual void StartAction_Implementation(AActor* Instigator) override;
-	virtual void StopAction_Implementation(AActor* Instigator) override;
+	virtual void StopAction_Implementation(AActor* Instigator, EActionStopReason ActionStopReason = EActionStopReason::None) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Effect")

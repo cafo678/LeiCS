@@ -13,7 +13,16 @@ class LEICS_API ALeiAIController : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	virtual void BeginPlay() override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category =".Lei | AI")
 	UBehaviorTree* BehaviorTree = nullptr;
+
+	UFUNCTION()
+	void OnCombatSceneEntered(AActor* Opponent);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
 };

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/NoExportTypes.h"
+#include "LeiCommonTypes.h"
 #include "LeiAction.generated.h"
 
 /*
@@ -24,6 +25,9 @@ UCLASS(Blueprintable)
 class LEICS_API ULeiAction : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	ULeiAction();
 
 protected:
 	/** This action executed grants these tags that will be removed when the action is stopped */
@@ -59,6 +63,13 @@ protected:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Properties")
 	FGameplayTag ActionTagID;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Properties")
+	FGameplayTagContainer CanStartStateTags;
+
+	/** If this is set this action can start only after successfully doing one of these actions */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ".Lei | Properties")
+	TSet<FDirectionalActionDetails> ComboActionDetailsList;
 	
 	/** This action will start as soon as added to an action component */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Properties")
@@ -78,10 +89,14 @@ public:
 	void StartAction(AActor* Instigator);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = ".Lei | Action")
-	void StopAction(AActor* Instigator);
+	void StopAction(AActor* Instigator, EActionStopReason ActionStopReason = EActionStopReason::None);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool IsRunning() const { return bIsRunning; }
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Action")
+	AActor* ActionInstigator = nullptr;
 
 private:
 	bool bIsRunning = false;

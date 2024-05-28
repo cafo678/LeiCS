@@ -13,7 +13,7 @@ class LEICS_API ULeiCombatSceneSubsystem : public UGameInstanceSubsystem
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | CombatScene")
-	void StartCombatScene(AActor* InPlayerCharacter, TSet<AActor*> SceneEnemies);
+	void StartCombatScene(AActor* InPlayerCharacter, AActor* SceneEnemy);
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | CombatScene")
 	void EndCombatScene();
@@ -21,18 +21,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | CombatScene")
 	bool IsCombatSceneActive() const { return bIsCombatSceneActive; }
 
-	UFUNCTION(BlueprintCallable, Category = ".Lei | CombatScene")
-	void NotifyActionStartedOnEnemies(FGameplayTag ActionTagID, FGameplayTag DirectionTag);
-
-	UFUNCTION(BlueprintCallable, Category = ".Lei | CombatScene")
-	AActor* GetTargetToLock() const;
-
 private:
 	UPROPERTY()
 	AActor* PlayerCharacter = nullptr;
 
 	UPROPERTY()
-	TSet<AActor*> CurrentSceneEnemies;
+	AActor* CurrentSceneEnemy;
 
 	bool bIsCombatSceneActive;
 };

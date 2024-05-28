@@ -3,9 +3,9 @@
 
 ULeiAttributeSet::ULeiAttributeSet()
 {
-	Health.Value = 100.f;
-	Health.MaxValue = 100.f;
-	Health.MinValue = 0.f;
+	Lives.Value = 2.f;
+	Lives.MaxValue = 2.f;
+	Lives.MinValue = 0.f;
 
 	Poise.Value = 100.f;
 	Poise.MaxValue = 100.f;

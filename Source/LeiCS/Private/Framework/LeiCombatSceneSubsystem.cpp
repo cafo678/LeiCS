@@ -2,77 +2,30 @@
 
 
 #include "Framework/LeiCombatSceneSubsystem.h"
-#include "AI/LeiEnemyActorInterface.h"
 #include "Framework/LeiActionComponentInterface.h"
 #include "Framework/LeiActionComponent.h"
 #include "LeiCS/LeiCS.h"
 
-void ULeiCombatSceneSubsystem::StartCombatScene(AActor* InPlayerCharacter, TSet<AActor*> SceneEnemies)
+void ULeiCombatSceneSubsystem::StartCombatScene(AActor* InPlayerCharacter, AActor* SceneEnemy)
 {
-	ensureAlways(!bIsCombatSceneActive && InPlayerCharacter && SceneEnemies.Num());
+	ensureAlways(!bIsCombatSceneActive && InPlayerCharacter && SceneEnemy && 
+		InPlayerCharacter->Implements<ULeiActionComponentInterface>() && SceneEnemy->Implements<ULeiActionComponentInterface>());
 
 	bIsCombatSceneActive = true;
 
 	PlayerCharacter = InPlayerCharacter;
+	CurrentSceneEnemy = SceneEnemy;
 
-	if (PlayerCharacter->Implements<ULeiActionComponentInterface>())
-	{
-		ULeiActionComponent* PlayerActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(PlayerCharacter);
-		PlayerActionComponent->StartActionByTagID(PlayerCharacter, TAG_Action_CombatState, FGameplayTag());
-		PlayerActionComponent->OnActionStartedDelegate.AddDynamic(this, &ULeiCombatSceneSubsystem::NotifyActionStartedOnEnemies);
-	}
-
-	CurrentSceneEnemies = SceneEnemies;
-
-	for (AActor* Enemy : CurrentSceneEnemies)
-	{
-		if (Enemy->Implements<ULeiEnemyActorInterface>())
-		{
-			ILeiEnemyActorInterface::Execute_OnCombatSceneEntered(Enemy, PlayerCharacter, CurrentSceneEnemies);
-		}
-	}
+	ILeiActionComponentInterface::Execute_OnCombatSceneEntered(PlayerCharacter, CurrentSceneEnemy);
+	ILeiActionComponentInterface::Execute_OnCombatSceneEntered(CurrentSceneEnemy, PlayerCharacter);
 }
 
 void ULeiCombatSceneSubsystem::EndCombatScene()
 {
 	ensureAlways(bIsCombatSceneActive && PlayerCharacter);
 
-	if (PlayerCharacter->Implements<ULeiActionComponentInterface>())
-	{
-		ULeiActionComponent* PlayerActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(PlayerCharacter);
-		PlayerActionComponent->OnActionStartedDelegate.RemoveDynamic(this, &ULeiCombatSceneSubsystem::NotifyActionStartedOnEnemies);
-	}
-
-	CurrentSceneEnemies.Empty();
+	CurrentSceneEnemy = nullptr;
 	PlayerCharacter = nullptr;
 
 	bIsCombatSceneActive = false;
-}
-
-void ULeiCombatSceneSubsystem::NotifyActionStartedOnEnemies(FGameplayTag ActionTagID, FGameplayTag DirectionTag)
-{
-	ensureAlways(bIsCombatSceneActive && PlayerCharacter && CurrentSceneEnemies.Num());
-
-	for (AActor* Enemy : CurrentSceneEnemies)
-	{
-		if (Enemy->Implements<ULeiEnemyActorInterface>())
-		{
-			ILeiEnemyActorInterface::Execute_OnPlayerActionStarted(Enemy, ActionTagID, DirectionTag);
-		}
-	}
-}
-
-AActor* ULeiCombatSceneSubsystem::GetTargetToLock() const
-{
-	// TODO
-
-	if (CurrentSceneEnemies.Num())
-	{
-		for (AActor* Enemy : CurrentSceneEnemies)
-		{
-			return Enemy;
-		}
-	}
-
-	return nullptr;
 }

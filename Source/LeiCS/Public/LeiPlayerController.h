@@ -36,7 +36,7 @@ protected:
 	float ShortestCameraRotationSpeed;
 	
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
-	AActor* LockedActor;
+	AActor* Opponent;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Locomotion")
 	void MoveForward(const float Value);
@@ -53,9 +53,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	void CheckGameplayStateInput();
 
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnLockedActorChanged(AActor* NewLockedActor);
+	void OnOpponentSet(AActor* NewOpponent);
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
 	void OnGameplayStateChanged(FGameplayTag NewStateTag);
