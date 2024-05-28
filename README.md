@@ -7,7 +7,7 @@ This time in 3rd person and with some animation.
 This also implements a simil GameplayAbility System.
 
 Left Stick: Movement  
-Right Stick: Camera  
+Right Stick: Directional Actions  
 
 Right Bumper: Attack State  
 When in attack state:  
@@ -17,9 +17,9 @@ Left Bumper: Defense State
 When in defense state:  
 RightStick: Directional Defense, parry if timed correctly  
 
-Right Stick Press: Lock on target  
-When target locked:  
-RightStick: Directional dodge, combo if followed by another directional action at the right time  
+No Back Keys: Combat State  
+When in defense state:  
+RightStick: Directional Dodge, combo if followed by another directional action at the right time  
 
 When parryed and the times slow down, only defense or dodge is allowed while the enemy can attack you.
 Viceversa, when a successful parry lands, the enemy will be slowed down and the player can attack.
