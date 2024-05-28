@@ -10,15 +10,15 @@ Left Stick: Movement
 Right Stick: Directional Actions  
 
 Right Bumper: Attack State  
-When in attack state:  
+When in Attack State:  
 RightStick: Directional Attack, combo if followed by another directional action at the right time  
 
 Left Bumper: Defense State  
-When in defense state:  
+When in Defense State:  
 RightStick: Directional Defense, parry if timed correctly  
 
 No Back Keys: Combat State  
-When in defense state:  
+When in Combat State:  
 RightStick: Directional Dodge, combo if followed by another directional action at the right time  
 
 When parryed and the times slow down, only defense or dodge is allowed while the enemy can attack you.
