@@ -46,8 +46,8 @@ void ALeiCharacter::SetMaxWalkSpeed(float Value, float MaxValue, float MinValue)
 	CharacterMovementComponent->MaxWalkSpeed = Value;
 }
 
-void ALeiCharacter::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag DirectionTag)
+void ALeiCharacter::OnOpponentActionStarted_Implementation(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag DirectionTag)
 {
-	OnOpponentActionStartedDelegate.Broadcast(ActionTagID, DirectionTag);
+	OnOpponentActionStartedDelegate.Broadcast(Opponent, ActionTagID, DirectionTag);
 }
 

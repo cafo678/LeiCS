@@ -53,16 +53,20 @@ void ULeiAction::StopAction_Implementation(AActor* Instigator, EActionStopReason
 	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s readded tags removed: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *RemoveTagsFiltered.ToString());
 	UE_LOG(LogLeiTags, Warning, TEXT("%s Action %s removed tags added: %s"), *GetNameSafe(ActionComponent->GetOwner()), *ActionTagID.ToString(), *GrantsTags.ToString());
 
+	bIsRunning = false;
+	ActionInstigator = nullptr;
+
+	FGameplayTag CachedDirectionTag = ActionComponent->CurrentDirectionalActionDetails.Direction;
+
 	if (bIsDirectional)
 	{
 		ensureAlways(ActionComponent->CurrentDirectionalActionDetails.Direction != TAG_Direction_None);
 
-		ActionComponent->ResetCurrentDirectionalActionDetails();
+		ActionComponent->CurrentDirectionalActionDetails.ActionTagID = TAG_Action_None;
+		ActionComponent->CurrentDirectionalActionDetails.Direction = TAG_Direction_None;
 	}
 
-	ActionInstigator = nullptr;
-
-	bIsRunning = false;
+	ActionComponent->OnActionStoppedDelegate.Broadcast(ActionComponent->GetOwner(), ActionTagID, CachedDirectionTag, bIsDirectional);
 }
 
 bool ULeiAction::CanStart_Implementation(AActor* Instigator)

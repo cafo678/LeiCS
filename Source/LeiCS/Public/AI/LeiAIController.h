@@ -20,9 +20,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category =".Lei | AI")
 	UBehaviorTree* BehaviorTree = nullptr;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
 	void OnCombatSceneEntered(AActor* Opponent);
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
 };

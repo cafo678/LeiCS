@@ -13,10 +13,10 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLeiAttributes, Log, All);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCurrentDirectionalActionDetailsDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpponentSetDelegate, AActor*, NewOpponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGameplayTag, NewStateTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStartedDelegate, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActionStartedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnActionStoppedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag, bool, bIsDirectional);
 
 class ULeiAction;
 class ULeiAttributeSet;
@@ -60,7 +60,7 @@ public:
 	/** Delegates */
 	
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
-	FOnResetCurrentDirectionalActionDetailsDelegate OnResetCurrentDirectionalActionDetailsDelegate;
+	FOnActionStoppedDelegate OnActionStoppedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnOpponentSetDelegate OnOpponentSetDelegate;
@@ -87,9 +87,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
 	bool StopActionByTagID(AActor* Instigator, FGameplayTag ActionTagID, EActionStopReason ActionStopReason = EActionStopReason::None);
-
-	UFUNCTION(BlueprintCallable, Category = ".Lei | Action")
-	void ResetCurrentDirectionalActionDetails();
 
 	/** Attributes */
 

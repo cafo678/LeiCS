@@ -51,10 +51,13 @@ protected:
 	void OnRightStickReleased();
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
+	void OnActionStopped(AActor* ActionActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	void CheckGameplayStateInput();
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+	void OnOpponentActionStarted(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
 
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")

@@ -27,7 +27,6 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Dodge, "Action.Dodge")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_ReceiveStagger, "Action.ReceiveStagger")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_RecoverFromParry, "Action.RecoverFromParry")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_FireCleave, "Action.FireCleave")
-UE_DEFINE_GAMEPLAY_TAG(TAG_Action_PoiseRegen, "Action.PoiseRegen")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Deathblow, "Action.Deathblow")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Action_Fireball, "Action.Fireball")
 

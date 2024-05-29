@@ -16,14 +16,13 @@ void ALeiAIController::BeginPlay()
 	ControlledCharacter->OnOpponentActionStartedDelegate.AddDynamic(this, &ALeiAIController::OnOpponentActionStarted);
 }
 
-void ALeiAIController::OnCombatSceneEntered(AActor* Opponent)
+void ALeiAIController::OnCombatSceneEntered_Implementation(AActor* Opponent)
 {
 	RunBehaviorTree(BehaviorTree);
 	SetFocus(Opponent);
 	GetBlackboardComponent()->SetValueAsObject("PlayerPawn", Opponent);
 }
 
-void ALeiAIController::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
+void ALeiAIController::OnOpponentActionStarted_Implementation(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
 {
-	GetBlackboardComponent()->SetValueAsBool("PlayerActionJustStarted", true);
 }

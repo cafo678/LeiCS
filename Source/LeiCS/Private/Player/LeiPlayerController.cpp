@@ -37,7 +37,7 @@ void ALeiPlayerController::BeginPlay()
 		
 		PawnActionComponent->OnOpponentSetDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentSet);
 		PawnActionComponent->OnGameplayStateChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnGameplayStateChanged);
-		PawnActionComponent->OnResetCurrentDirectionalActionDetailsDelegate.AddDynamic(this, &ALeiPlayerController::CheckGameplayStateInput);
+		PawnActionComponent->OnActionStoppedDelegate.AddDynamic(this, &ALeiPlayerController::OnActionStopped);
 	}
 
 	ALeiCharacter* ControlledCharacter = Cast<ALeiCharacter>(GetPawn());
@@ -246,6 +246,14 @@ void ALeiPlayerController::OnRightStickReleased()
 	bCanFireNewAction = true;
 }
 
+void ALeiPlayerController::OnActionStopped(AActor* ActionActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
+{
+	if (bIsDirectional)
+	{
+		CheckGameplayStateInput();
+	}
+}
+
 FGameplayTag ALeiPlayerController::GetInputDirectionTag(const float XValue, const float YValue) const
 {	
 	if (FMath::IsNearlyEqual(XValue, 1.f, RightStickErrorTolerance))
@@ -323,7 +331,7 @@ void ALeiPlayerController::CheckGameplayStateInput()
 	}
 }
 
-void ALeiPlayerController::OnOpponentActionStarted_Implementation(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
+void ALeiPlayerController::OnOpponentActionStarted_Implementation(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
 {
 }
 

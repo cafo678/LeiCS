@@ -162,7 +162,7 @@ bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag Ac
 			
 			Action->StartAction(Instigator);
 
-			OnActionStartedDelegate.Broadcast(ActionTagID, DirectionTagID);
+			OnActionStartedDelegate.Broadcast(GetOwner(), ActionTagID, DirectionTagID);
 
 			return true;
 		}
@@ -191,14 +191,6 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 	}
 
 	return false;
-}
-
-void ULeiActionComponent::ResetCurrentDirectionalActionDetails()
-{
-	CurrentDirectionalActionDetails.ActionTagID = TAG_Action_None;
-	CurrentDirectionalActionDetails.Direction = TAG_Direction_None;
-
-	OnResetCurrentDirectionalActionDetailsDelegate.Broadcast();
 }
 
 void ULeiActionComponent::SetOpponent(AActor* NewOpponent)

@@ -9,7 +9,7 @@
 #include "LeiCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatSceneEnteredDelegate, AActor*, Opponent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnOpponentActionStartedDelegate, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnOpponentActionStartedDelegate, AActor*, Opponent, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
 
 class UStaticMeshComponent;
 class ULeiActionComponent;
@@ -53,5 +53,5 @@ protected:
 	void SetMaxWalkSpeed(float Value, float MaxValue, float MinValue);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
 };
