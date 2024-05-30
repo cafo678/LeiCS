@@ -37,11 +37,14 @@ void ALeiPlayerController::BeginPlay()
 		
 		PawnActionComponent->OnOpponentSetDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentSet);
 		PawnActionComponent->OnGameplayStateChangedDelegate.AddDynamic(this, &ALeiPlayerController::OnGameplayStateChanged);
-		PawnActionComponent->OnActionStoppedDelegate.AddDynamic(this, &ALeiPlayerController::OnActionStopped);
+		PawnActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiPlayerController::OnPawnActionStarted);
+		PawnActionComponent->OnActionStoppedDelegate.AddDynamic(this, &ALeiPlayerController::OnPawnActionStopped);
 	}
 
-	ALeiCharacter* ControlledCharacter = Cast<ALeiCharacter>(GetPawn());
-	ControlledCharacter->OnOpponentActionStartedDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentActionStarted);
+	if (ALeiCharacter* ControlledCharacter = Cast<ALeiCharacter>(GetPawn()))
+	{
+		ControlledCharacter->OnCombatSceneEnteredDelegate.AddDynamic(this, &ALeiPlayerController::OnPawnCombatSceneEntered);
+	}
 }
 
 void ALeiPlayerController::Tick(float DeltaSeconds)
@@ -246,14 +249,6 @@ void ALeiPlayerController::OnRightStickReleased()
 	bCanFireNewAction = true;
 }
 
-void ALeiPlayerController::OnActionStopped(AActor* ActionActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
-{
-	if (bIsDirectional)
-	{
-		CheckGameplayStateInput();
-	}
-}
-
 FGameplayTag ALeiPlayerController::GetInputDirectionTag(const float XValue, const float YValue) const
 {	
 	if (FMath::IsNearlyEqual(XValue, 1.f, RightStickErrorTolerance))
@@ -331,7 +326,30 @@ void ALeiPlayerController::CheckGameplayStateInput()
 	}
 }
 
-void ALeiPlayerController::OnOpponentActionStarted_Implementation(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag)
+void ALeiPlayerController::OnPawnCombatSceneEntered_Implementation(AActor* OpponentActor)
+{
+	ULeiActionComponent* OppononentActionComponent = ILeiActionComponentInterface::Execute_GetActionComponent(OpponentActor);
+	OppononentActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentActionStarted);
+	OppononentActionComponent->OnActionStoppedDelegate.AddDynamic(this, &ALeiPlayerController::OnOpponentActionStopped);
+}
+
+void ALeiPlayerController::OnPawnActionStarted_Implementation(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
+{
+}
+
+void ALeiPlayerController::OnPawnActionStopped_Implementation(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
+{
+	if (bIsDirectional)
+	{
+		CheckGameplayStateInput();
+	}
+}
+
+void ALeiPlayerController::OnOpponentActionStarted_Implementation(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
+{
+}
+
+void ALeiPlayerController::OnOpponentActionStopped_Implementation(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional)
 {
 }
 

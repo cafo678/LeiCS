@@ -15,7 +15,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogLeiAttributes, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpponentSetDelegate, AActor*, NewOpponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGameplayTag, NewStateTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActionStartedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnActionStartedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag, bool, bIsDirectional);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnActionStoppedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag, bool, bIsDirectional);
 
 class ULeiAction;

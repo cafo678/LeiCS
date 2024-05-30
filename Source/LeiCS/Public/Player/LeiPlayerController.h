@@ -26,17 +26,6 @@ protected:
 	/** Error tolerance for the right stick when computing directional input */
 	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Input")
 	float RightStickErrorTolerance;
-	
-	/** Speed for when the camera will do the longest route to lock the target */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
-	float LongestCameraRotationSpeed;
-
-	/** Speed for when the camera will do the shortest route to lock the target */
-	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
-	float ShortestCameraRotationSpeed;
-	
-	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
-	AActor* Opponent;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Locomotion")
 	void MoveForward(const float Value);
@@ -51,28 +40,50 @@ protected:
 	void OnRightStickReleased();
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
-	void OnActionStopped(AActor* ActionActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
-
-	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	void CheckGameplayStateInput();
 
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
-
 public:
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentSet(AActor* NewOpponent);
-
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnGameplayStateChanged(FGameplayTag NewStateTag);
-
 	/** Used to decide when to enter stop locomotion state in the AnimBP */
 	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Input")
 	bool HasUserReleasedMovementInput;
-	
+
 	/** Used to decide what animation to play (run / walk) when entering start locomotion state in the AnimBP */
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	float GetMovementInputValue() const;
+	
+protected:
+	/** Speed for when the camera will do the longest route to lock the target */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
+	float LongestCameraRotationSpeed;
+
+	/** Speed for when the camera will do the shortest route to lock the target */
+	UPROPERTY(EditDefaultsOnly, Category = ".Lei | Camera")
+	float ShortestCameraRotationSpeed;
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnPawnCombatSceneEntered(AActor* OpponentActor);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnPawnActionStarted(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnPawnActionStopped(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStarted(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStopped(AActor* OpponentActor, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+	
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Gameplay")
+	AActor* Opponent;
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnOpponentSet(AActor* NewOpponent);
+
+public:
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
+	void OnGameplayStateChanged(FGameplayTag NewStateTag);
 
 private:
 	bool bCanFireNewAction = true;

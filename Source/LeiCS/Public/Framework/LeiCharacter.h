@@ -9,7 +9,6 @@
 #include "LeiCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatSceneEnteredDelegate, AActor*, Opponent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnOpponentActionStartedDelegate, AActor*, Opponent, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag);
 
 class UStaticMeshComponent;
 class ULeiActionComponent;
@@ -28,9 +27,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnCombatSceneEnteredDelegate OnCombatSceneEnteredDelegate;
-
-	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
-	FOnOpponentActionStartedDelegate OnOpponentActionStartedDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,7 +47,18 @@ protected:
 
 	UFUNCTION()
 	void SetMaxWalkSpeed(float Value, float MaxValue, float MinValue);
+
+	/** Actions */
 	
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnActionStarted(AActor* Character, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnActionStopped(AActor* Character, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStopped(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
 };

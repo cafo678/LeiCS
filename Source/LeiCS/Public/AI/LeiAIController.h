@@ -21,8 +21,17 @@ protected:
 	UBehaviorTree* BehaviorTree = nullptr;
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnCombatSceneEntered(AActor* Opponent);
+	void OnPawnCombatSceneEntered(AActor* Opponent);
 
-	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Gameplay")
-	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag);
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnPawnActionStarted(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnPawnActionStopped(AActor* ControlledPawn, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStarted(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnOpponentActionStopped(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
 };

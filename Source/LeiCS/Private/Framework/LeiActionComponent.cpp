@@ -162,7 +162,7 @@ bool ULeiActionComponent::StartActionByTagID(AActor* Instigator, FGameplayTag Ac
 			
 			Action->StartAction(Instigator);
 
-			OnActionStartedDelegate.Broadcast(GetOwner(), ActionTagID, DirectionTagID);
+			OnActionStartedDelegate.Broadcast(GetOwner(), ActionTagID, DirectionTagID, Action->bIsDirectional);
 
 			return true;
 		}
