@@ -72,6 +72,11 @@ float ULeiBlueprintFunctionLibrary::GetDamageDelta(ULeiActionComponent* Instigat
 {
 	ensureAlways(InstigatorActionComponent && TargetActionComponent);
 
+	if (TargetActionComponent->ActiveGameplayTags.HasTag(TAG_Status_Invulnerable) || TargetActionComponent->ActiveGameplayTags.HasTag(TAG_Status_Staggered))
+	{
+		return 0.f;
+	}
+
 	const float InstigatorAttack = InstigatorActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Attack);
 	const float TargetDefense = TargetActionComponent->AttributeSet->GetAttributeValue(TAG_Attribute_Defense);
 

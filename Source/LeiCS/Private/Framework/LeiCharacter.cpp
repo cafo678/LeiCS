@@ -32,6 +32,8 @@ void ALeiCharacter::BeginPlay()
 
 	ActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiCharacter::OnActionStarted);
 	ActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiCharacter::OnActionStopped);
+	ActionComponent->OnDamageReceivedDelegate.AddDynamic(this, &ALeiCharacter::OnDamageReceived);
+	ActionComponent->OnParryReceivedDelegate.AddDynamic(this, &ALeiCharacter::OnParryReceived);
 }
 
 void ALeiCharacter::SetMaxWalkSpeed(float Value, float MaxValue, float MinValue)
@@ -66,3 +68,10 @@ void ALeiCharacter::OnOpponentActionStopped_Implementation(AActor* Opponent, FGa
 {
 }
 
+void ALeiCharacter::OnDamageReceived_Implementation(float Delta, AActor* InInstigator, FGameplayTag InstigatorActionTagID)
+{
+}
+
+void ALeiCharacter::OnParryReceived_Implementation(float BacklashDeltaLocation, float BacklashDuration)
+{
+}

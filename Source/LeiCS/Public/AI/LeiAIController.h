@@ -16,6 +16,10 @@ class LEICS_API ALeiAIController : public AAIController
 public:
 	virtual void BeginPlay() override;
 
+	/** This flag controls wheter the AI can react to the opponent actions -- Events in Controller BP */
+	UPROPERTY(BlueprintReadWrite, Category = ".Lei | AI")
+	bool bCanReact = true;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category =".Lei | AI")
 	UBehaviorTree* BehaviorTree = nullptr;

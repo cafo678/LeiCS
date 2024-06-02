@@ -193,14 +193,26 @@ bool ULeiActionComponent::StopActionByTagID(AActor* Instigator, FGameplayTag Act
 	return false;
 }
 
+void ULeiActionComponent::ReceiveDamage(float Delta, AActor* Instigator, FGameplayTag InstigatorActionTagID)
+{
+	if (Delta != 0.f)
+	{
+		AttributeSet->ApplyAttributeChange(TAG_Attribute_Poise, Delta);
+
+		OnDamageReceivedDelegate.Broadcast(Delta, Instigator, InstigatorActionTagID);
+	}
+}
+
 void ULeiActionComponent::SetOpponent(AActor* NewOpponent)
 {
 	Opponent = NewOpponent;
 	OnOpponentSetDelegate.Broadcast(NewOpponent);
 }
 
-void ULeiActionComponent::OnGameplayStateChanged(FGameplayTag NewStateTag)
+void ULeiActionComponent::ChangeGameplayState(FGameplayTag NewStateTag)
 {
+	GameplayState = NewStateTag;
+
 	OnGameplayStateChangedDelegate.Broadcast(NewStateTag);
 }
 

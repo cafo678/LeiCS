@@ -15,6 +15,8 @@ DECLARE_LOG_CATEGORY_EXTERN(LogLeiAttributes, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpponentSetDelegate, AActor*, NewOpponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayStateChangedDelegate, FGameplayTag, NewStateTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnParryReceivedDelegate, float, BacklashDeltaLocation, float, BacklashDuration);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDamageReceivedDelegate, float, Delta, AActor*, Instigator, FGameplayTag, InstigatorActionTagID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnActionStartedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag, bool, bIsDirectional);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnActionStoppedDelegate, AActor*, ActionActor, FGameplayTag, ActionTagID, FGameplayTag, ActionDirectionTag, bool, bIsDirectional);
 
@@ -43,11 +45,11 @@ public:
 
 	/** Gameplay State */
 
-	UPROPERTY(BlueprintReadWrite, Category = ".Lei | Tags")
+	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Tags")
 	FGameplayTag GameplayState;
 
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Gameplay")
-	void OnGameplayStateChanged(FGameplayTag NewStateTag);
+	void ChangeGameplayState(FGameplayTag NewStateTag);
 
 	/** Opponent */
 
@@ -70,6 +72,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
 	FOnActionStartedDelegate OnActionStartedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = ".Lei | Gameplay")
+	FOnDamageReceivedDelegate OnDamageReceivedDelegate;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = ".Lei | Gameplay")
+	FOnParryReceivedDelegate OnParryReceivedDelegate;
 
 	/** Actions */
 	
@@ -95,6 +103,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = ".Lei | Attributes")
 	ULeiAttributeSet* AttributeSet = nullptr;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Attributes")
+	void ReceiveDamage(float Delta, AActor* Instigator, FGameplayTag InstigatorActionTagID);
 
 	/** Combo Helper */
 

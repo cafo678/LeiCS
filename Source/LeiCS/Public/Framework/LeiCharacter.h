@@ -48,6 +48,9 @@ protected:
 	UFUNCTION()
 	void SetMaxWalkSpeed(float Value, float MaxValue, float MinValue);
 
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnDamageReceived(float Delta, AActor* InInstigator, FGameplayTag InstigatorActionTagID);
+
 	/** Actions */
 	
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
@@ -61,4 +64,7 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
 	void OnOpponentActionStopped(AActor* Opponent, FGameplayTag ActionTagID, FGameplayTag ActionDirectionTag, bool bIsDirectional);
+
+	UFUNCTION(BlueprintNativeEvent, Category = ".Lei | Action")
+	void OnParryReceived(float BacklashDeltaLocation, float BacklashDuration);
 };
