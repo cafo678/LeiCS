@@ -7,7 +7,9 @@ public class LeiCSTarget : TargetRules
 {
 	public LeiCSTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		bOverrideBuildEnvironment = true;
+
+        Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "LeiCS" } );
 	}

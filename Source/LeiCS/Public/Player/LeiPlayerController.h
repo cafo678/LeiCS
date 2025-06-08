@@ -50,6 +50,9 @@ public:
 	/** Used to decide what animation to play (run / walk) when entering start locomotion state in the AnimBP */
 	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
 	float GetMovementInputValue() const;
+
+	UFUNCTION(BlueprintCallable, Category = ".Lei | Input")
+	FGameplayTag GetInputDirectionTag(const float XValue, const float YValue) const;
 	
 protected:
 	/** Speed for when the camera will do the longest route to lock the target */
@@ -102,7 +105,6 @@ private:
 	FGameplayTag GetDirectionalActionIDToDo(FGameplayTag GameplayState, FGameplayTag ActionDirection) const;
 	bool IsGameplayStateActionKeyPressed(FGameplayTag GameplayStateToCheck) const;
 
-	FGameplayTag GetInputDirectionTag(const float XValue, const float YValue) const;
 	float GetCameraDesiredSpeedByDelta(float Delta) const;
 };
 

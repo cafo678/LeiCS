@@ -240,6 +240,10 @@ void ALeiPlayerController::HandleRightStick(const float XValue, const float YVal
 				/** Start new action */
 				PawnActionComponent->StartActionByTagID(this, NewActionTagID, GetInputDirectionTag(XValue, YValue));
 			}
+			else
+			{
+				bCanFireNewAction = false;
+			}
 		}
 	}
 }

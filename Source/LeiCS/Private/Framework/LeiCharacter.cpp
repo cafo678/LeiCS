@@ -31,7 +31,7 @@ void ALeiCharacter::BeginPlay()
 	ActionComponent->AttributeSet->AddAttributeChangedDelegate(TAG_Attribute_MaxWalkSpeed, Delegate);
 
 	ActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiCharacter::OnActionStarted);
-	ActionComponent->OnActionStartedDelegate.AddDynamic(this, &ALeiCharacter::OnActionStopped);
+	ActionComponent->OnActionStoppedDelegate.AddDynamic(this, &ALeiCharacter::OnActionStopped);
 	ActionComponent->OnDamageReceivedDelegate.AddDynamic(this, &ALeiCharacter::OnDamageReceived);
 	ActionComponent->OnParryReceivedDelegate.AddDynamic(this, &ALeiCharacter::OnParryReceived);
 }
